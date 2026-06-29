@@ -29,6 +29,34 @@ skills/
 
 ## 如何使用
 
+### 使用 npx skills 安装
+
+如果本地已经安装 Node.js，可以直接用 `npx skills` 从 GitHub 安装：
+
+```bash
+npx skills add zhaoli-ai/GhostCut-ai --skill ghostcut-api-guide
+```
+
+安装到 Codex 的全局 skills 目录：
+
+```bash
+npx skills add zhaoli-ai/GhostCut-ai --skill ghostcut-api-guide --agent codex --global
+```
+
+也可以先查看仓库中可安装的 skill：
+
+```bash
+npx skills add zhaoli-ai/GhostCut-ai --list
+```
+
+说明：
+
+- `zhaoli-ai/GhostCut-ai` 是 GitHub 的 `owner/repo` 写法。
+- `ghostcut-api-guide` 来自 `skills/ghostcut-api-guide/SKILL.md` 中的 `name` 字段。
+- 如果本地没有 Node.js 或不想使用命令行，可以继续使用下面的手动复制方式。
+
+### 手动安装
+
 在支持 Codex Skills 的环境中，将下面目录复制到本地 skills 目录：
 
 ```text
