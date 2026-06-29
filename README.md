@@ -29,6 +29,12 @@ skills/
 
 ## 如何使用
 
+也可以让 Agent 直接读取安装说明：
+
+```text
+请访问 https://raw.githubusercontent.com/zhaoli-ai/GhostCut-ai/main/skills.md 并按说明为我安装 GhostCut AI Skills。
+```
+
 ### 使用 npx skills 安装
 
 如果本地已经安装 Node.js，可以直接用 `npx skills` 从 GitHub 安装：
