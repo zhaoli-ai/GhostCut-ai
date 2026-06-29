@@ -2,13 +2,13 @@
 
 GhostCut-ai contains Agent-oriented skills and reference material for using GhostCut APIs.
 
-当前仓库主要提供一个 Codex Skill：
+当前仓库主要提供一个 Agent Skill：
 
 ```text
 skills/ghostcut-api-guide/
 ```
 
-这个 skill 面向 Agent 使用，帮助 Agent 选择 GhostCut API 调用流程、组装请求体、解释参数、查询任务状态，并处理本地文件上传、字幕擦除、字幕压制、OCR/ASR 字幕提取、背景音乐分离、视频翻译配音、公共音色查询、语言支持和“译制出海”模块。
+这个 skill 面向 Codex、Claude Code、Cursor、OpenCode 等支持 Agent Skills 的工具使用，帮助 Agent 选择 GhostCut API 调用流程、组装请求体、解释参数、查询任务状态，并处理本地文件上传、字幕擦除、字幕压制、OCR/ASR 字幕提取、背景音乐分离、视频翻译配音、公共音色查询、语言支持和“译制出海”模块。
 
 ## 目录结构
 
@@ -43,6 +43,30 @@ npx skills add zhaoli-ai/GhostCut-ai --skill ghostcut-api-guide
 npx skills add zhaoli-ai/GhostCut-ai --skill ghostcut-api-guide --agent codex --global
 ```
 
+安装到 Claude Code：
+
+```bash
+npx skills add zhaoli-ai/GhostCut-ai --skill ghostcut-api-guide --agent claude-code --global
+```
+
+安装到 Cursor：
+
+```bash
+npx skills add zhaoli-ai/GhostCut-ai --skill ghostcut-api-guide --agent cursor --global
+```
+
+安装到 OpenCode：
+
+```bash
+npx skills add zhaoli-ai/GhostCut-ai --skill ghostcut-api-guide --agent opencode --global
+```
+
+也可以一次选择多个 Agent：
+
+```bash
+npx skills add zhaoli-ai/GhostCut-ai --skill ghostcut-api-guide --agent codex --agent claude-code --agent cursor --global
+```
+
 也可以先查看仓库中可安装的 skill：
 
 ```bash
@@ -53,21 +77,24 @@ npx skills add zhaoli-ai/GhostCut-ai --list
 
 - `zhaoli-ai/GhostCut-ai` 是 GitHub 的 `owner/repo` 写法。
 - `ghostcut-api-guide` 来自 `skills/ghostcut-api-guide/SKILL.md` 中的 `name` 字段。
+- `--agent` 用于指定安装到哪个 Agent；不确定本地支持哪些 Agent 时，可以先运行 `npx skills add zhaoli-ai/GhostCut-ai --skill ghostcut-api-guide`，按交互提示选择。
 - 如果本地没有 Node.js 或不想使用命令行，可以继续使用下面的手动复制方式。
 
 ### 手动安装
 
-在支持 Codex Skills 的环境中，将下面目录复制到本地 skills 目录：
+在支持 Agent Skills 的环境中，将下面目录复制到对应 Agent 的 skills 目录：
 
 ```text
 skills/ghostcut-api-guide
 ```
 
-常见安装位置：
+Codex 常见安装位置：
 
 ```text
 ~/.codex/skills/ghostcut-api-guide
 ```
+
+不同 Agent 的本地目录可能不同；使用 `npx skills add ... --agent <name>` 时，CLI 会自动放到对应位置。
 
 使用时可以对 Agent 说：
 
