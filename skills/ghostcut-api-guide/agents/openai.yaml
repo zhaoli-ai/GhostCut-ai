@@ -1,0 +1,4 @@
+interface:
+  display_name: "GhostCut API 指引"
+  short_description: "面向 Agent 的 GhostCut API 工作流"
+  default_prompt: "Use $ghostcut-api-guide 根据 GhostCut API 指引选择流程并组装有效请求。"
