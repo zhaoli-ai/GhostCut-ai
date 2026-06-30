@@ -17,7 +17,7 @@
    经典模式需要在 `wyVoiceParam.character_voices` 中配置目标语种音色，并使用 `wyTaskType=FULL`。公共声音可通过[公共音色查询接口](./32-public-voice-characters.md)获取音色角色 ID，并填入 `id_ve_voice_character`。情感克隆模式通过 `wyTaskType=VOICE_CLONE_PRO` 开启，不需要手动为角色选择音色。
 
 3. **创建语音翻译任务**
-   调用 `/v-w-c/gateway/ve/work/free`，传入视频 URL、源语言、目标语言、配音参数和可选字幕输入。接口返回成功后，从 `body.dataList[0].id` 中获取作品 ID。
+   调用 `/v-w-c/gateway/ve/work/free`，传入视频 URL、源语言、目标语言、配音参数和可选字幕输入。若原视频画面已有硬字幕，可在同一次请求中组合字幕擦除参数，不需要先单独创建字幕擦除任务。接口返回成功后，从 `body.dataList[0].id` 中获取作品 ID。
 
 4. **查询任务状态**
    按[视频任务状态查询](./11-work-status-query.md)调用 `/v-w-c/gateway/ve/work/status`，传入作品 ID 列表 `idWorks`。处理成功后，响应中会返回 `processStatus` 和结果视频 URL。
@@ -137,6 +137,60 @@ print(f"任务创建成功，Work ID: {work_id}")
 | `removeBgAudio` | `number` | 否 | 背景音处理策略。`0`：保留背景音；`1`：全局静音，仅保留新 AI 语音；`2`：去除音乐旋律，仅保留环境效果音。 |
 | `wyVoiceParam` | `string` | 是 | JSON 字符串，配置角色配音和字幕样式。 |
 | `extraOptions` | `string` | 否 | JSON 字符串，配置外挂字幕、音画对齐、OCR 调优、精准时间轴等。 |
+
+## 常见组合：语音翻译 + 擦除原字幕
+
+视频语音翻译常与字幕擦除一起使用。若原视频画面中已有硬字幕，翻译后通常不希望保留原始字幕，否则结果视频中会同时出现原字幕和译后字幕。
+
+这种场景不需要创建两次处理任务，也不需要先调用字幕擦除再调用语音翻译。普通单视频接口 `/v-w-c/gateway/ve/work/free` 支持在同一次请求中组合语音翻译参数和字幕擦除参数。
+
+组合时：
+
+- 语音翻译参数仍使用 `needWanyin`、`sourceLang`、`lang`、`wyTaskType`、`wyNeedText`、`wyVoiceParam`。
+- 字幕擦除参数同时加入 `needChineseOcclude`、`videoInpaintLang`、`videoInpaintMasks`。
+- 如果使用高擦 Lite/Pro，需把 `extra_inpaint_config` 合并到同一个 `extraOptions` JSON 字符串中，不要覆盖语音翻译已有的 `extra_video_translate_config`、`customer_input_srt` 或 `customer_input`。
+- 字幕区域、模型版本和坐标规则见[字幕 mask 补充说明](./22-inpaint-masks-supplement.md)。
+
+组合请求体关键片段：
+
+```python
+video_inpaint_masks = [
+    {
+        "type": "remove_only_ocr",
+        "start": 0,
+        "end": 99999,
+        "region": [[0, 0.56], [1, 0.56], [1, 0.76], [0, 0.76]],
+    }
+]
+
+extra_options = {
+    "subtitle_format": "srt",
+    "extra_video_translate_config": {
+        "video_speedup_on": True,
+    },
+    "extra_inpaint_config": {
+        "model": "advanced_lite",
+    },
+}
+
+task_payload = {
+    "urls": ["https://example.com/input.mp4"],
+
+    "needWanyin": 1,
+    "sourceLang": "zh",
+    "lang": "en",
+    "wyTaskType": "FULL",
+    "wyNeedText": 1,
+    "removeBgAudio": 1,
+    "wyVoiceParam": json.dumps(wy_voice_param, ensure_ascii=False, separators=(",", ":")),
+
+    "needChineseOcclude": 2,
+    "videoInpaintLang": "all",
+    "videoInpaintMasks": json.dumps(video_inpaint_masks, ensure_ascii=False, separators=(",", ":")),
+
+    "extraOptions": json.dumps(extra_options, ensure_ascii=False, separators=(",", ":")),
+}
+```
 
 ## 语音任务类型
 
@@ -395,6 +449,11 @@ while True:
 - 默认经典模式完整配音链路使用 `needWanyin=1`、`wyTaskType=FULL`，并配置 `sourceLang`、`lang`、`wyVoiceParam.character_voices`。
 - 如果用户只要配音不要画面字幕，传 `wyNeedText=0`，`wyVoiceParam` 可以只包含 `character_voices`。
 - 如果用户既要配音又要压制译后字幕，传 `wyNeedText=1`，`wyVoiceParam` 同时包含 `character_voices` 和 `font_param`。
+- 用户要做视频语音翻译、译制或重新配音，且原视频画面已有硬字幕时，应主动提示建议同时擦除原字幕，避免结果视频中同时出现原字幕和译后字幕。
+- 语音翻译 + 字幕擦除使用同一次 `/v-w-c/gateway/ve/work/free` 创建任务，不要默认拆成两次处理。
+- 组合任务时，把字幕擦除参数 `needChineseOcclude`、`videoInpaintLang`、`videoInpaintMasks` 与语音翻译参数放在同一个请求体中。
+- 如果同时需要 `extra_video_translate_config` 和 `extra_inpaint_config`，必须合并到同一个 `extraOptions` JSON 字符串里，不要互相覆盖。
+- 如果用户没有说明原字幕位置，应先询问字幕区域，或按竖版/横版常用字幕区给出可调整的默认遮罩框。
 - 如果用户提供了原文/译文 SRT，放到 `extraOptions.customer_input_srt`；同时传 `source` 和 `translation` 时，系统会跳过翻译。
 - 如果用户提供逐句时间轴，放到 `extraOptions.customer_input.content`，并确保 `character` 与 `wyVoiceParam.character_voices` 对应。
 - 经典模式需要手动选择角色音色；`voice_type=TTS` 表示经典基础或经典高级音色，`voice_type=CLONE` 表示超真实音色。
@@ -407,6 +466,8 @@ while True:
 - [API 凭证与签名](./02-auth-and-sign.md)：查看公共签名规则和常见鉴权错误。
 - [文件上传](./10-file-upload.md)：本地视频或本地 SRT 需要先上传并获得临时 URL。
 - [公共音色查询接口](./32-public-voice-characters.md)：没有指定音色 ID 时，先查询公共音色并获取 `id_ve_voice_character`。
+- [视频去字幕](./21-erase-video-subtitle.md)：需要擦除原视频硬字幕、文字或固定区域时查看。
+- [字幕 mask 补充说明](./22-inpaint-masks-supplement.md)：查看擦除模型版本、字幕区域坐标和 `videoInpaintMasks` 规则。
 - [字幕样式和字体配置补充](./26-subtitle-style-and-fonts.md)：配置译后字幕的字体、描边、阴影和背景。
 - [不同功能支持的语言列表](./13-language-support.md)：确认 `sourceLang` 和 `lang` 的可用值。
 - [视频任务状态查询](./11-work-status-query.md)：查询作品处理状态并读取 `videoUrl`。

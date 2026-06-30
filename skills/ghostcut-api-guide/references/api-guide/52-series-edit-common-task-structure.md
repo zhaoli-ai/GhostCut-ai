@@ -169,7 +169,7 @@ def ghostcut_post(path: str, payload: dict) -> dict:
 | `lang` | `String` | 否 | 目标语种。 |
 | `videoInpaintLang` | `String` | 去字/OCR 常用 | 去字或 OCR 语种。 |
 | `needChineseOcclude` | `Byte` | 去字/OCR 常用 | 去字或 OCR 模式。 |
-| `videoInpaintMasks` | `List` / `String` | 否 | 去字或 OCR 区域。AI 配音任务不要主动生成该字段；需要去字幕时先单独创建字幕擦除任务。 |
+| `videoInpaintMasks` | `List` / `String` | 否 | 去字或 OCR 区域。AI 配音最小请求体不包含该字段；如果配音前需要处理原视频硬字幕，应先创建字幕擦除任务，再在配音任务中用 `workDto.materialWorkIds` 复用擦除后的作品。 |
 | `videoInpaintMasks_lite` | `List` | 否 | Lite 去字区域。 |
 | `videoInpaintMasks_pro` | `List` | 否 | Pro 去字区域。 |
 | `vtrMode` | `String` | 否 | 去字模式，例如 `lite`。 |
@@ -312,7 +312,7 @@ def ghostcut_post(path: str, payload: dict) -> dict:
 - `videoEditParamsDto.type` 固定传 `WORK`。
 - 普通任务参数优先放到 `items[]` 元素内的 `workDto` 和 `videoEditParamsDto`，不要同时在顶层和 `items[]` 元素内重复放不一致的值。
 - `sourceLang`、`lang` 可以在顶层和 `videoEditParamsDto` 中同时出现，确保二者语义一致。
-- 本模块示例中，`workDto.extraOptions`、`videoEditParamsDto.wyVoiceParam` 可直接传对象；去字或 OCR 任务中的 `videoEditParamsDto.videoInpaintMasks` 可直接传数组。不要默认套用普通单视频接口里的 JSON 字符串写法。AI 配音任务不要主动生成 `videoInpaintMasks`。
+- 本模块示例中，`workDto.extraOptions`、`videoEditParamsDto.wyVoiceParam` 可直接传对象；去字或 OCR 任务中的 `videoEditParamsDto.videoInpaintMasks` 可直接传数组。不要默认套用普通单视频接口里的 JSON 字符串写法。译制出海 AI 配音前先判断原素材是否已无硬字幕、是否已通过 `materialWorkIds` 复用字幕擦除后作品；如果两者都不是，应询问用户是否需要先创建字幕擦除任务。
 - 配音模式分为经典模式和情感克隆模式：经典模式使用 `wyTaskType=FULL` 并手动传 `character_voices[]`；情感克隆模式使用 `wyTaskType=VOICE_CLONE_PRO`，不要把 `voice_type=CLONE` 当成情感克隆模式。
 - 不要把 `task/list` 的 `body[].id` 直接当成作品 ID；它是任务 ID，需要再调用 `/work/status` 查询。
 - 不要用 `idMaterialVideo` 代替 `workDto.materialWorkIds`。

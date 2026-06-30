@@ -35,6 +35,7 @@
 | 配置字幕字体、描边、阴影、背景、样式模板 | [字幕样式和字体配置补充](./26-subtitle-style-and-fonts.md) | [为视频压制字幕](./23-burn-subtitles.md)、[视频语音翻译与重新配音](./31-video-voice-translation.md) |
 | 去掉或分离视频背景音乐，保留人声和环境声 | [背景音乐去除/分离](./30-background-music-separation.md) | [文件上传](./10-file-upload.md)、[视频任务状态查询](./11-work-status-query.md) |
 | 翻译视频并生成新配音，或重新配音 | [视频语音翻译与重新配音](./31-video-voice-translation.md) | [公共音色查询接口](./32-public-voice-characters.md)、[字幕样式和字体配置补充](./26-subtitle-style-and-fonts.md)、[语言列表](./13-language-support.md) |
+| 翻译视频并生成新配音，同时擦除原视频硬字幕 | [视频语音翻译与重新配音](./31-video-voice-translation.md) | [视频去字幕](./21-erase-video-subtitle.md)、[字幕 mask 补充说明](./22-inpaint-masks-supplement.md) |
 | 为视频配音功能选择公共音色 | [公共音色查询接口](./32-public-voice-characters.md) | [视频语音翻译与重新配音](./31-video-voice-translation.md) |
 | 擦除图片文字、翻译图片并回填到图中、调整图片翻译结果 | [AI 图片处理](./81-image-processing.md) | [文件上传](./10-file-upload.md)、[语言列表](./13-language-support.md) |
 | 处理译制出海剧集、项目素材或批量视频任务 | [译制出海剪辑 API 模块](./51-series-overview.md) | [译制出海项目与视频素材](./60-series-project-and-video-materials.md)、[译制出海字幕素材管理](./61-series-subtitle-materials.md)、[译制出海通用任务结构](./52-series-edit-common-task-structure.md) |
@@ -127,6 +128,7 @@
 - 涉及擦除区域、OCR 区域或坐标时，读[字幕 mask 补充说明](./22-inpaint-masks-supplement.md)。
 - 涉及新字幕外观时，读[字幕样式和字体配置补充](./26-subtitle-style-and-fonts.md)。
 - 涉及视频重新配音且没有音色 ID 时，先查[公共音色查询接口](./32-public-voice-characters.md)。
+- 涉及视频语音翻译、重新配音或译制，且原视频画面已有硬字幕时，读[视频语音翻译与重新配音](./31-video-voice-translation.md)中的组合场景；语音翻译和字幕擦除通常在同一次 `/work/free` 请求中组合参数，不要默认拆成两次处理。
 - 涉及图片文字擦除、图片翻译、Image Redo 或图片翻译精修时，先查[AI 图片处理](./81-image-processing.md)。
 - 涉及译制出海、剧集、项目素材、批量视频任务、`idSeries` 或 `idMaterialVideo` 时，先查[译制出海剪辑 API 模块](./51-series-overview.md)。
 - 本文只做路由和公共规则说明；具体请求体字段和完整代码示例以功能文档为准。
