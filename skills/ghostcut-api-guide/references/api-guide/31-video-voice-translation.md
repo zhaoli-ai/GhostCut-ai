@@ -17,7 +17,7 @@
    经典模式需要在 `wyVoiceParam.character_voices` 中配置目标语种音色，并使用 `wyTaskType=FULL`。公共声音可通过[公共音色查询接口](./32-public-voice-characters.md)获取音色角色 ID，并填入 `id_ve_voice_character`。情感克隆模式通过 `wyTaskType=VOICE_CLONE_PRO` 开启，不需要手动为角色选择音色。
 
 3. **创建语音翻译任务**
-   调用 `/v-w-c/gateway/ve/work/free`，传入视频 URL、源语言、目标语言、配音参数和可选字幕输入。若原视频画面已有硬字幕，可在同一次请求中组合字幕擦除参数，不需要先单独创建字幕擦除任务。接口返回成功后，从 `body.dataList[0].id` 中获取作品 ID。
+   调用 `/v-w-c/gateway/ve/work/free`，传入视频 URL、源语言、目标语言、配音参数和可选字幕输入。默认传 `removeBgAudio=0` 保留原视频背景音，除非用户明确要求静音、去背景音乐或只保留 AI 语音/环境音。若原视频画面已有硬字幕，可在同一次请求中组合字幕擦除参数，不需要先单独创建字幕擦除任务。接口返回成功后，从 `body.dataList[0].id` 中获取作品 ID。
 
 4. **查询任务状态**
    按[视频任务状态查询](./11-work-status-query.md)调用 `/v-w-c/gateway/ve/work/status`，传入作品 ID 列表 `idWorks`。处理成功后，响应中会返回 `processStatus` 和结果视频 URL。
@@ -113,7 +113,7 @@ task_payload = {
     "lang": "en",
     "wyTaskType": "FULL",
     "wyNeedText": 1,
-    "removeBgAudio": 1,
+    "removeBgAudio": 0,
     "wyVoiceParam": json.dumps(wy_voice_param, ensure_ascii=False, separators=(",", ":")),
     "extraOptions": json.dumps(extra_options, ensure_ascii=False, separators=(",", ":")),
 }
@@ -134,7 +134,7 @@ print(f"任务创建成功，Work ID: {work_id}")
 | `lang` | `string` | 是 | 目标语言，需要翻译成的语种代码，例如英文传 `en`。 |
 | `wyTaskType` | `string` | 是 | 语音任务处理类型。常用 `FULL` 表示 ASR 提取、翻译、AI 新配音完整处理。 |
 | `wyNeedText` | `number` | 是 | 新字幕展示开关。`0`：不把译后字幕合成到画面中；`1`：开启新字幕画面合成。 |
-| `removeBgAudio` | `number` | 否 | 背景音处理策略。`0`：保留背景音；`1`：全局静音，仅保留新 AI 语音；`2`：去除音乐旋律，仅保留环境效果音。 |
+| `removeBgAudio` | `number` | 否 | 背景音处理策略。默认优先传 `0` 保留原视频背景音；`1`：全局静音，仅保留新 AI 语音；`2`：去除音乐旋律，仅保留环境效果音。只有用户明确要求静音、去 BGM、不要原声或只保留 AI 语音/环境音时，才改用 `1` 或 `2`。 |
 | `wyVoiceParam` | `string` | 是 | JSON 字符串，配置角色配音和字幕样式。 |
 | `extraOptions` | `string` | 否 | JSON 字符串，配置外挂字幕、音画对齐、OCR 调优、精准时间轴等。 |
 
@@ -181,7 +181,7 @@ task_payload = {
     "lang": "en",
     "wyTaskType": "FULL",
     "wyNeedText": 1,
-    "removeBgAudio": 1,
+    "removeBgAudio": 0,
     "wyVoiceParam": json.dumps(wy_voice_param, ensure_ascii=False, separators=(",", ":")),
 
     "needChineseOcclude": 2,
@@ -414,7 +414,7 @@ task = api_post("/v-w-c/gateway/ve/work/free", {
     "lang": "en",
     "wyTaskType": "FULL",
     "wyNeedText": 1,
-    "removeBgAudio": 1,
+    "removeBgAudio": 0,
     "wyVoiceParam": json.dumps(wy_voice_param, ensure_ascii=False, separators=(",", ":")),
     "extraOptions": json.dumps(extra_options, ensure_ascii=False, separators=(",", ":")),
 })
@@ -446,7 +446,8 @@ while True:
 
 - 用户要“翻译视频并重新配音”“视频语音翻译”“译制视频”时，优先使用本功能。
 - 本功能为异步任务；生产接入推荐使用 `callback` 接收结果，轮询作为查询和补偿兜底。
-- 默认经典模式完整配音链路使用 `needWanyin=1`、`wyTaskType=FULL`，并配置 `sourceLang`、`lang`、`wyVoiceParam.character_voices`。
+- 默认经典模式完整配音链路使用 `needWanyin=1`、`wyTaskType=FULL`、`removeBgAudio=0`，并配置 `sourceLang`、`lang`、`wyVoiceParam.character_voices`；优先保留原视频背景音。
+- 不要默认传 `removeBgAudio=1`。只有用户明确要求静音、去掉原声、不要背景音、只保留 AI 语音时才传 `1`；用户要求去 BGM 或只保留环境效果音时传 `2`。
 - 如果用户只要配音不要画面字幕，传 `wyNeedText=0`，`wyVoiceParam` 可以只包含 `character_voices`。
 - 如果用户既要配音又要压制译后字幕，传 `wyNeedText=1`，`wyVoiceParam` 同时包含 `character_voices` 和 `font_param`。
 - 用户要做视频语音翻译、译制或重新配音，且原视频画面已有硬字幕时，应主动提示建议同时擦除原字幕，避免结果视频中同时出现原字幕和译后字幕。

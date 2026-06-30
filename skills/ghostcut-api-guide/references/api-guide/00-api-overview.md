@@ -128,6 +128,7 @@
 - 涉及擦除区域、OCR 区域或坐标时，读[字幕 mask 补充说明](./22-inpaint-masks-supplement.md)。
 - 涉及新字幕外观时，读[字幕样式和字体配置补充](./26-subtitle-style-and-fonts.md)。
 - 涉及视频重新配音且没有音色 ID 时，先查[公共音色查询接口](./32-public-voice-characters.md)。
+- 涉及视频语音翻译、重新配音或译制时，默认优先保留原视频背景音，语音翻译请求使用 `removeBgAudio=0`；只有用户明确要求静音、去背景音乐、不要原声或只保留 AI 语音/环境音时，才改用 `removeBgAudio=1` 或 `2`。
 - 涉及视频语音翻译、重新配音或译制，且原视频画面已有硬字幕时，读[视频语音翻译与重新配音](./31-video-voice-translation.md)中的组合场景；语音翻译和字幕擦除通常在同一次 `/work/free` 请求中组合参数，不要默认拆成两次处理。
 - 涉及图片文字擦除、图片翻译、Image Redo 或图片翻译精修时，先查[AI 图片处理](./81-image-processing.md)。
 - 涉及译制出海、剧集、项目素材、批量视频任务、`idSeries` 或 `idMaterialVideo` 时，先查[译制出海剪辑 API 模块](./51-series-overview.md)。
