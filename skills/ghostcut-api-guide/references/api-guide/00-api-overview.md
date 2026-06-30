@@ -26,7 +26,7 @@
 | 本地视频、本地 SRT 或本地图片需要先传给 GhostCut | [文件上传](./10-file-upload.md) | 后续再进入具体功能文档 |
 | 查询普通单视频任务是否完成、读取结果 URL | [视频任务状态查询](./11-work-status-query.md) | [视频处理状态枚举](./14-video-process-status.md) |
 | 了解异步任务、轮询策略、callback 回调、回调验签、重试和幂等 | [异步任务、轮询和回调机制](./15-async-and-callbacks.md) | [视频任务状态查询](./11-work-status-query.md)、[AI 图片处理](./81-image-processing.md) |
-| 基础剪辑、截取视频片段、调整分辨率、调色锐化、滤镜、镜像、缩放或画面移动 | [视频基础处理](./12-video-basic-processing.md) | [文件上传](./10-file-upload.md)、[视频任务状态查询](./11-work-status-query.md) |
+| 基础剪辑、截取视频片段、调整分辨率、调色锐化、滤镜、镜像、缩放或画面移动 | [视频基础处理](./27-video-basic-processing.md) | [文件上传](./10-file-upload.md)、[视频任务状态查询](./11-work-status-query.md) |
 | 去掉视频中的字幕、文字、角标、logo 或固定区域 | [视频去字幕](./21-erase-video-subtitle.md) | [字幕 mask 补充说明](./22-inpaint-masks-supplement.md)、[视频任务状态查询](./11-work-status-query.md) |
 | 解释擦除模型版本差异、手动画框坐标、`videoInpaintMasks` | [字幕 mask 补充说明](./22-inpaint-masks-supplement.md) | [视频去字幕](./21-erase-video-subtitle.md) |
 | 把已有 SRT 字幕硬压制到视频画面里 | [为视频压制字幕](./23-burn-subtitles.md) | [字幕样式和字体配置补充](./26-subtitle-style-and-fonts.md)、[文件上传](./10-file-upload.md) |
@@ -98,9 +98,9 @@
 | `status` | 图片处理状态 | [AI 图片处理](./81-image-processing.md) |
 | `callback` | 异步任务完成后的回调 URL | [异步任务、轮询和回调机制](./15-async-and-callbacks.md) |
 | `Callback-Sign` | GhostCut 回调请求头中的验签值 | [异步任务、轮询和回调机制](./15-async-and-callbacks.md) |
-| `resolution` | 普通视频处理任务的输出分辨率 | [视频基础处理](./12-video-basic-processing.md) |
-| `needTrim` / `needMask` / `needMirror` / `needRescale` / `needShift` | 视频基础处理、特效、镜像、缩放和画面移动参数 | [视频基础处理](./12-video-basic-processing.md) |
-| `extraOptions.range` / `write_options.crf` / `extra_trim_config` | 截取时间段、画质压缩率和智能基础优化微调配置 | [视频基础处理](./12-video-basic-processing.md) |
+| `resolution` | 普通视频处理任务的输出分辨率 | [视频基础处理](./27-video-basic-processing.md) |
+| `needTrim` / `needMask` / `needMirror` / `needRescale` / `needShift` | 视频基础处理、特效、镜像、缩放和画面移动参数 | [视频基础处理](./27-video-basic-processing.md) |
+| `extraOptions.range` / `write_options.crf` / `extra_trim_config` | 截取时间段、画质压缩率和智能基础优化微调配置 | [视频基础处理](./27-video-basic-processing.md) |
 | `videoInpaintMasks` | 擦除或 OCR 的画面区域框 | [字幕 mask 补充说明](./22-inpaint-masks-supplement.md) |
 | `sourceLang` | 源语言 | [不同功能支持的语言列表](./13-language-support.md) |
 | `videoInpaintLang` | 画面文字识别或擦除语言 | [不同功能支持的语言列表](./13-language-support.md) |
@@ -122,7 +122,7 @@
 - 用户问 API Key、`AppKey`、`AppSecret`、凭证在哪里获取或如何鉴权时，先读[API 凭证与签名](./02-auth-and-sign.md)。
 - 用户提到异步任务、轮询策略、callback 回调、`Callback-Sign`、回调重试或幂等时，先查[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。生产接入优先推荐 `callback`，轮询作为查询和补偿兜底，初始轮询间隔建议 300 秒。
 - 创建普通单视频处理任务后，不要把 `code=1000` 当作最终成功；必须按[视频任务状态查询](./11-work-status-query.md)继续查询 `processStatus`。
-- 涉及基础剪辑、分辨率、截取、调色、锐化、片头片尾裁剪、加速、滤镜、镜像、缩放或画面移动时，先查[视频基础处理](./12-video-basic-processing.md)。
+- 涉及基础剪辑、分辨率、截取、调色、锐化、片头片尾裁剪、加速、滤镜、镜像、缩放或画面移动时，先查[视频基础处理](./27-video-basic-processing.md)。
 - 涉及语言代码时，先查[不同功能支持的语言列表](./13-language-support.md)，不要凭常识猜测。
 - 涉及擦除区域、OCR 区域或坐标时，读[字幕 mask 补充说明](./22-inpaint-masks-supplement.md)。
 - 涉及新字幕外观时，读[字幕样式和字体配置补充](./26-subtitle-style-and-fonts.md)。

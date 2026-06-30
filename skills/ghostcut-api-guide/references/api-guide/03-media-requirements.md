@@ -76,5 +76,5 @@
 
 - [文件上传](./10-file-upload.md)：本地文件上传到 GhostCut 并获取临时 URL。
 - [示例素材](../sample-assets.md)：没有视频或图片时可用的演示素材 URL。
-- [视频基础处理](./12-video-basic-processing.md)：普通视频处理的一类常见入口。
+- [视频基础处理](./27-video-basic-processing.md)：普通视频处理的一类常见入口。
 - [AI 图片处理](./81-image-processing.md)：图片文字擦除、图片翻译和二次微调。

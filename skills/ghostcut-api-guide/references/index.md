@@ -22,7 +22,6 @@
 - `api-guide/03-media-requirements.md`：素材 URL、视频格式、图片格式、本地上传和批量数量要求。
 - `api-guide/10-file-upload.md`：上传本地文件。
 - `api-guide/11-work-status-query.md`：查询 `/work/status`。
-- `api-guide/12-video-basic-processing.md`：视频基础剪辑、截取、分辨率、智能优化、滤镜、镜像、缩放和画面移动。
 - `api-guide/13-language-support.md`：语言支持。
 - `api-guide/14-video-process-status.md`：处理状态和错误码。
 - `api-guide/15-async-and-callbacks.md`：异步任务、轮询、回调、验签、重试和幂等规则。
@@ -35,6 +34,7 @@
 - `api-guide/24-ocr-subtitle-extraction.md`：通过图像 OCR 识别视频画面中的硬字幕，并输出 SRT 文件。
 - `api-guide/25-asr-subtitle-extraction.md`：通过音频语音识别提取台词，并输出 SRT 文件。
 - `api-guide/26-subtitle-style-and-fonts.md`：字幕样式细节。
+- `api-guide/27-video-basic-processing.md`：视频基础剪辑、截取、分辨率、智能优化、滤镜、镜像、缩放和画面移动。
 - `api-guide/30-background-music-separation.md`：去除原视频背景音中的音乐旋律，保留人声和环境效果音。
 - `api-guide/31-video-voice-translation.md`：翻译视频并生成 AI 新配音。
 - `api-guide/32-public-voice-characters.md`：公共音色查询。
