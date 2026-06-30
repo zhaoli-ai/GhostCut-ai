@@ -91,6 +91,44 @@ npx skills add zhaoli-ai/GhostCut-ai --list
 - `--agent` 用于指定安装到哪个 Agent；不确定本地支持哪些 Agent 时，可以先运行 `npx skills add zhaoli-ai/GhostCut-ai --skill ghostcut-api-guide`，按交互提示选择。
 - 如果本地没有 Node.js 或不想使用命令行，可以继续使用下面的手动复制方式。
 
+### 更新已安装的 skill
+
+本仓库的 GitHub `main` 分支是 GhostCut AI Skill 的更新入口。Skill 不会在本地静默自动更新；需要用户主动重新安装最新版本，并重启对应 Agent。
+
+如果你是用 `npx skills` 安装的，可以重新执行对应 Agent 的安装命令：
+
+```bash
+npx skills add zhaoli-ai/GhostCut-ai --skill ghostcut-api-guide --agent codex --global
+```
+
+如果 CLI 提示 skill 已存在或目标目录已存在，先删除旧版本，再重新执行安装命令。Codex 的常见全局目录如下：
+
+```bash
+rm -rf ~/.codex/skills/ghostcut-api-guide
+npx skills add zhaoli-ai/GhostCut-ai --skill ghostcut-api-guide --agent codex --global
+```
+
+Codex 用户也可以使用 Codex 内置的 `skill-installer` 从 GitHub 重新安装：
+
+```bash
+rm -rf ~/.codex/skills/ghostcut-api-guide
+python ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
+  --repo zhaoli-ai/GhostCut-ai \
+  --path skills/ghostcut-api-guide \
+  --ref main
+```
+
+如果要安装固定版本，可以把 `--ref main` 替换成发布 tag，例如：
+
+```bash
+python ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
+  --repo zhaoli-ai/GhostCut-ai \
+  --path skills/ghostcut-api-guide \
+  --ref v1.0.0
+```
+
+更新后请重启 Codex、Claude Code、Cursor 或 OpenCode，让 Agent 重新加载 skill。
+
 ### 手动安装
 
 在支持 Agent Skills 的环境中，将下面目录复制到对应 Agent 的 skills 目录：
