@@ -103,11 +103,11 @@ print(f"任务创建成功，Work ID: {work_id}")
 | `needWanyin` | `number` | 是 | 语音模块开关，固定传 `1`。 |
 | `wyTaskType` | `string` | 是 | 任务类型，固定传 `ONLY_ASR`，表示仅执行 ASR 抽取字幕，不执行配音，不改变视频。 |
 | `wyNeedText` | `number` | 是 | 新字幕展示开关，固定传 `0`。 |
-| `sourceLang` | `string` | 是 | 音频源语言。可用语种见[不同功能支持的语言列表](./90-language-support.md)中的 ASR 提取字幕。 |
+| `sourceLang` | `string` | 是 | 音频源语言。可用语种见[不同功能支持的语言列表](./13-language-support.md)中的 ASR 提取字幕。 |
 
 ### 3. 查询任务状态
 
-创建任务拿到 `work_id` 后，按[视频任务状态查询](./11-work-status-query.md)调用 `/v-w-c/gateway/ve/work/status`。本功能在 `processStatus == 1` 时读取 `srcSrtUrl` / `tgtSrtUrl`；如果 `processStatus > 1`，按[视频处理状态枚举](./91-video-process-status.md)排查失败原因。
+创建任务拿到 `work_id` 后，按[视频任务状态查询](./11-work-status-query.md)调用 `/v-w-c/gateway/ve/work/status`。本功能在 `processStatus == 1` 时读取 `srcSrtUrl` / `tgtSrtUrl`；如果 `processStatus > 1`，按[视频处理状态枚举](./14-video-process-status.md)排查失败原因。生产接入推荐使用 `callback` 接收结果，轮询作为查询和补偿兜底，规则见[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。
 
 ## 完整示例
 
@@ -181,15 +181,18 @@ while True:
 ## Agent 决策规则
 
 - 用户要从音频中的人声转写字幕时，使用 ASR 字幕提取。
-- 用户要从视频画面里已经存在的硬字幕提取 SRT 时，使用 [OCR 提取视频字幕](./23-ocr-subtitle-extraction.md)。
+- 用户要从视频画面里已经存在的硬字幕提取 SRT 时，使用 [OCR 提取视频字幕](./24-ocr-subtitle-extraction.md)。
+- 本功能为异步任务；生产接入推荐使用 `callback` 接收结果，轮询作为查询和补偿兜底。
 - ASR 提取固定传 `needWanyin=1`、`wyTaskType=ONLY_ASR`、`wyNeedText=0`。
 - ASR 提取只产出 SRT 文件，不产出处理后视频；查询结果时读取 `srcSrtUrl` / `tgtSrtUrl`，不要等待 `videoUrl`。
 
 ## 相关文档
 
-- [API 总览](./00-api-overview.md)：查看公共签名规则、异步任务流程和功能选择入口。
+- [API 总览](./00-api-overview.md)：查看功能选择入口和主要调用流程。
+- [API 凭证与签名](./02-auth-and-sign.md)：查看公共签名规则和常见鉴权错误。
 - [文件上传](./10-file-upload.md)：本地视频需要先上传并获得临时 URL。
-- [OCR 提取视频字幕](./23-ocr-subtitle-extraction.md)：画面中已有硬字幕时，优先使用 OCR。
-- [不同功能支持的语言列表](./90-language-support.md)：确认 `sourceLang` 在 ASR 场景下的可用值。
+- [OCR 提取视频字幕](./24-ocr-subtitle-extraction.md)：画面中已有硬字幕时，优先使用 OCR。
+- [不同功能支持的语言列表](./13-language-support.md)：确认 `sourceLang` 在 ASR 场景下的可用值。
 - [视频任务状态查询](./11-work-status-query.md)：查询作品处理状态并读取 `srcSrtUrl` / `tgtSrtUrl`。
-- [视频处理状态枚举](./91-video-process-status.md)：根据 `processStatus` 判断是否成功、继续轮询或失败。
+- [视频处理状态枚举](./14-video-process-status.md)：根据 `processStatus` 判断是否成功、继续轮询或失败。
+- [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：查看 callback 回调格式、验签、重试和幂等规则。

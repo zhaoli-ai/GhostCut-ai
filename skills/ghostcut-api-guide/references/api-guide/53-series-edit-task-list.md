@@ -4,7 +4,7 @@
 
 # 译制出海任务查询
 
-> 提交译制出海任务后，使用本接口查询任务列表和处理进度。若需要进一步查询作品详情、作品 ID 或播放地址，应先从本接口拿到任务 ID，再调用 `/v-w-c/gateway/ve/work/status`。后续任务需要 `materialWorkIds` 时，使用 `/work/status` 返回的 `body.content[].id`。
+> 提交译制出海任务后，生产接入推荐优先通过 `callback` 接收最终结果；本接口用于查询任务列表、处理进度和补偿兜底。若需要进一步查询作品详情、作品 ID 或播放地址，应先从本接口拿到任务 ID，再调用 `/v-w-c/gateway/ve/work/status`。后续任务需要 `materialWorkIds` 时，使用 `/work/status` 返回的 `body.content[].id`。
 
 ## 接口信息
 
@@ -158,8 +158,8 @@ gateway/ve/series/edit/task/list
 
 | 判断 | 含义 | 建议 |
 | --- | --- | --- |
-| `processingWorkCount > 0` | 仍有视频处理中 | 继续轮询 `task/list`。 |
-| `errorWorkCount > 0` | 有视频失败 | 记录 `trace` 和任务信息，结合 [错误与检查清单](./48-series-edit-errors-and-checklist.md) 排查。 |
+| `processingWorkCount > 0` | 仍有视频处理中 | 等待 `callback`，或继续轮询 `task/list`；补偿轮询的初始间隔建议 300 秒。 |
+| `errorWorkCount > 0` | 有视频失败 | 记录 `trace` 和任务信息，结合 [错误与检查清单](./59-series-edit-errors-and-checklist.md) 排查。 |
 | `successWorkCount > 0` 且 `processingWorkCount == 0` 且 `errorWorkCount == 0` | 当前任务内视频均成功 | 进入后续任务或读取结果。 |
 
 ## 结果定位
@@ -168,8 +168,8 @@ gateway/ve/series/edit/task/list
 
 | 任务类型 | 结果定位方式 |
 | --- | --- |
-| 字幕提取 | 成功后通过 [字幕素材管理](./50-series-subtitle-materials.md) 查询 `subtitleFrom=2` ASR 或 `subtitleFrom=3` OCR 的字幕素材。 |
-| 字幕翻译 | 通过 [字幕翻译任务](./51-series-subtitle-translation.md) 查询翻译任务，再通过字幕列表查询 `subtitleFrom=4` 的译后字幕。 |
+| 字幕提取 | 成功后通过 [字幕素材管理](./61-series-subtitle-materials.md) 查询 `subtitleFrom=2` ASR 或 `subtitleFrom=3` OCR 的字幕素材。 |
+| 字幕翻译 | 通过 [字幕翻译任务](./62-series-subtitle-translation.md) 查询翻译任务，再通过字幕列表查询 `subtitleFrom=4` 的译后字幕。 |
 | 字幕擦除 | 需要后续复用或查看结果时，先通过 `task/list` 查询前序任务结果，找到对应的最新字幕擦除任务，拿到 `body[].id`。再按[视频任务状态查询](./11-work-status-query.md)调用 `/work/status` 查询该任务下的作品详情，从 `body.content[].id` 读取作品 ID。 |
 | AI 配音 / 字幕压制 / 音频分离 | 先用 `task/list` 判断完成，再从任务对象读取 `body[].id`；如果要查看作品 ID、播放地址或作品详情，再按[视频任务状态查询](./11-work-status-query.md)调用 `/work/status`，从 `body.content[].id` 读取作品 ID。 |
 
@@ -178,21 +178,23 @@ gateway/ve/series/edit/task/list
 ## 查询策略
 
 - 已知任务 ID 时，优先传 `ids` 精确查询。
+- 生产接入推荐通过 `callback` 接收最终结果；本接口适合作为主动查询、后台补偿扫描和问题排查入口。
 - 只知道剧集时，传 `idSeries`、`deleted=0` 和分页参数。
 - 按语言过滤时，查询接口使用 `sourceLanguage`、`targetLanguage`，不要写成提交任务时的 `sourceLang`、`lang`。
 - 按任务类型过滤时，使用本文 `taskType` 枚举；单类型用 `taskType`，多类型用 `taskTypeIn`。
 
 ## 相关文档
 
-- [译制出海剪辑 API 总览](./40-series-overview.md)：查看整体调用流程。
-- [通用任务结构](./41-series-edit-common-task-structure.md)：查看提交任务的请求结构。
-- [字幕素材管理](./50-series-subtitle-materials.md)：字幕提取和翻译完成后查询字幕素材。
-- [字幕翻译任务](./51-series-subtitle-translation.md)：查询、推进或重试字幕翻译任务。
-- [错误与检查清单](./48-series-edit-errors-and-checklist.md)：查看失败排查建议。
+- [译制出海剪辑 API 总览](./51-series-overview.md)：查看整体调用流程。
+- [通用任务结构](./52-series-edit-common-task-structure.md)：查看提交任务的请求结构。
+- [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：查看 callback 回调格式、验签、重试、幂等和补偿轮询规则。
+- [字幕素材管理](./61-series-subtitle-materials.md)：字幕提取和翻译完成后查询字幕素材。
+- [字幕翻译任务](./62-series-subtitle-translation.md)：查询、推进或重试字幕翻译任务。
+- [错误与检查清单](./59-series-edit-errors-and-checklist.md)：查看失败排查建议。
 
 ## Agent 决策规则
 
-- 提交译制出海任务后，优先通过本接口查询任务状态；如果还需要作品详情、作品 ID 或播放地址，再继续调用 `/work/status`。
+- 提交译制出海任务后，生产接入优先通过 `callback` 接收结果；本接口用于主动查询、补偿兜底和问题排查。如果还需要作品详情、作品 ID 或播放地址，再继续调用 `/work/status`。
 - 外层 `code=200` 只是查询请求成功，还要继续看任务里的 `successWorkCount`、`errorWorkCount`、`processingWorkCount`。
 - 如果用户问“任务是否完成”，优先按任务计数字段判断。
 - 如果用户问“字幕结果在哪里”，优先查字幕素材列表；如果用户问“视频结果在哪里”，先读取 `task/list` 返回的 `body[].id`，再按[视频任务状态查询](./11-work-status-query.md)查询作品详情。

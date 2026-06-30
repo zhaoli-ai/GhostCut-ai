@@ -30,7 +30,7 @@ gateway/ve/series/edit/task/subtitle/burn
 | 字幕压制参数 | 固定传 `wyTaskType=NO_TTS`、`wyNeedText=1`、`needWyEdit=0`。 |
 | 字幕样式 | 必须传 `videoEditParamsDto.wyVoiceParam.font_param`；不需要传 `character_voices[]`。 |
 | 基于擦除后视频 | 如果要基于字幕擦除后的作品压字幕，`workDto.materialWorkIds` 必须来自 `/work/status.body.content[].id`。 |
-| 结果查询 | 提交后先查 [任务查询](./42-series-edit-task-list.md)，需要作品 ID 或播放地址时再查 [视频任务状态查询](./11-work-status-query.md)。 |
+| 结果查询 | 生产接入推荐通过 `callback` 接收结果；也可查 [任务查询](./53-series-edit-task-list.md)，需要作品 ID 或播放地址时再查 [视频任务状态查询](./11-work-status-query.md)。 |
 
 ## 原视频字幕压制
 
@@ -208,7 +208,7 @@ print(json.dumps(result, ensure_ascii=False, indent=2))
 }
 ```
 
-`materialWorkIds` 应填写字幕擦除任务产出的可复用作品 ID。先通过 [任务查询](./42-series-edit-task-list.md) 的 `task/list` 查询字幕擦除任务结果，找到对应的最新字幕擦除任务，读取 `body[].id` 作为任务 ID；再按[视频任务状态查询](./11-work-status-query.md)的方式调用 `/work/status` 查询该任务下的作品详情，从响应的 `body.content[].id` 读取作品 ID，并填入 `workDto.materialWorkIds`。
+`materialWorkIds` 应填写字幕擦除任务产出的可复用作品 ID。先通过 [任务查询](./53-series-edit-task-list.md) 的 `task/list` 查询字幕擦除任务结果，找到对应的最新字幕擦除任务，读取 `body[].id` 作为任务 ID；再按[视频任务状态查询](./11-work-status-query.md)的方式调用 `/work/status` 查询该任务下的作品详情，从响应的 `body.content[].id` 读取作品 ID，并填入 `workDto.materialWorkIds`。
 
 ## 字幕内容来源
 
@@ -216,7 +216,7 @@ print(json.dumps(result, ensure_ascii=False, indent=2))
 
 `workDto.idVeMaterialSrt` 和 `workDto.extraOptions.customer_input` 不接受同时传。组装字幕压制任务时必须二选一：要么引用字幕素材，要么直接传字幕内容和时间轴。
 
-`idVeMaterialSrt` 应来自 [字幕素材管理](./50-series-subtitle-materials.md) 的字幕上传、创建、复制或查询结果。不要把字幕文件 URL、上传凭证中的临时 URL 或翻译任务 ID 填入该字段。
+`idVeMaterialSrt` 应来自 [字幕素材管理](./61-series-subtitle-materials.md) 的字幕上传、创建、复制或查询结果。不要把字幕文件 URL、上传凭证中的临时 URL 或翻译任务 ID 填入该字段。
 
 ## 字幕压制与音色配置
 
@@ -226,7 +226,7 @@ print(json.dumps(result, ensure_ascii=False, indent=2))
 
 ## 字幕样式参数
 
-译制出海字幕压制里的 `wyVoiceParam.font_param`，与普通单视频文档 [字幕样式和字体配置补充](./25-subtitle-style-and-fonts.md) 使用同一套规则。没有特殊样式要求时，可以直接复用 `25` 中推荐的默认组合。
+译制出海字幕压制里的 `wyVoiceParam.font_param`，与普通单视频文档 [字幕样式和字体配置补充](./26-subtitle-style-and-fonts.md) 使用同一套规则。没有特殊样式要求时，可以直接复用 `25` 中推荐的默认组合。
 
 ### V1.0 简化写法
 
@@ -326,21 +326,23 @@ print(json.dumps(result, ensure_ascii=False, indent=2))
 - `fontFamily` 与 `fontFileName` 应成对指定。
 - 多语种场景优先使用 `NotoSans`。
 - `fontFileName` 需要根据 `subtitleLang` 和是否加粗计算，例如 `NotoSans-Bold.ttf`、`NotoSansJP-Bold.ttf`、`NotoSansTC-Bold.ttf`。
-- 更完整的字体映射、背景类型和默认样式，直接参考 [字幕样式和字体配置补充](./25-subtitle-style-and-fonts.md)。
+- 更完整的字体映射、背景类型和默认样式，直接参考 [字幕样式和字体配置补充](./26-subtitle-style-and-fonts.md)。
 
 ## 相关文档
 
-- [译制出海剪辑 API 总览](./40-series-overview.md)：查看模块流程和任务选择规则。
-- [通用任务结构](./41-series-edit-common-task-structure.md)：查看 `customer_input`、`font_param`、`materialWorkIds` 和 Python 提交通用模板。
-- [字幕样式和字体配置补充](./25-subtitle-style-and-fonts.md)：查看 V1/V2 字幕样式、字号缩放、字体文件和背景配置。
-- [字幕素材管理](./50-series-subtitle-materials.md)：获取 `idVeMaterialSrt` 或从 `slInfo` 解析字幕内容。
-- [字幕擦除](./44-series-subtitle-inpaint.md)：先擦除旧字幕，再压制新字幕。
+- [译制出海剪辑 API 总览](./51-series-overview.md)：查看模块流程和任务选择规则。
+- [通用任务结构](./52-series-edit-common-task-structure.md)：查看 `customer_input`、`font_param`、`materialWorkIds` 和 Python 提交通用模板。
+- [字幕样式和字体配置补充](./26-subtitle-style-and-fonts.md)：查看 V1/V2 字幕样式、字号缩放、字体文件和背景配置。
+- [字幕素材管理](./61-series-subtitle-materials.md)：获取 `idVeMaterialSrt` 或从 `slInfo` 解析字幕内容。
+- [字幕擦除](./55-series-subtitle-inpaint.md)：先擦除旧字幕，再压制新字幕。
 - [视频任务状态查询](./11-work-status-query.md)：如果要查看作品播放地址或详情，按本文方式查询。
-- [任务查询](./42-series-edit-task-list.md)：提交后查询任务处理进度。
+- [任务查询](./53-series-edit-task-list.md)：提交后查询任务处理进度。
+- [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：查看 callback 回调格式、验签、重试、幂等和补偿轮询规则。
 
 ## Agent 决策规则
 
 - 用户只要把字幕压到画面上，不需要生成新配音时，用本接口。
+- 本功能为异步任务；生产接入推荐传入 `callback` 接收结果，轮询作为查询和补偿兜底。
 - 字幕压制固定使用 `wyTaskType=NO_TTS`，并设置 `wyNeedText=1`。
 - 字幕文本和时间轴可放在 `workDto.extraOptions.customer_input.content[]`。
 - 如果使用字幕素材，先查字幕列表确认 `idVeMaterialSrt`。

@@ -4,7 +4,7 @@
 
 # 字幕样式和字体配置补充
 
-> 本文档说明 GhostCut 字幕样式配置方式，主要用于[为视频压制字幕](./22-burn-subtitles.md)和[视频语音翻译与重新配音](./31-video-voice-translation.md)中的新字幕渲染。字幕样式统一通过 `wyVoiceParam` JSON 字符串下的 `font_param` 节点控制。
+> 本文档说明 GhostCut 字幕样式配置方式，主要用于[为视频压制字幕](./23-burn-subtitles.md)和[视频语音翻译与重新配音](./31-video-voice-translation.md)中的新字幕渲染。字幕样式统一通过 `wyVoiceParam` JSON 字符串下的 `font_param` 节点控制。
 
 ## 适用场景
 
@@ -419,5 +419,5 @@ def build_font_param_config(style: str) -> dict:
 ## 相关文档
 
 - [API 总览](./00-api-overview.md)：查看字幕样式与各功能之间的关系。
-- [为视频压制字幕](./22-burn-subtitles.md)：把已有 SRT 字幕压制到视频画面。
+- [为视频压制字幕](./23-burn-subtitles.md)：把已有 SRT 字幕压制到视频画面。
 - [视频语音翻译与重新配音](./31-video-voice-translation.md)：翻译视频并在新配音过程中渲染字幕。

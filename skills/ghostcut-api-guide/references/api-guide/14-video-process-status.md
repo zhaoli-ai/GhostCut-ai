@@ -76,7 +76,7 @@ status = content["processStatus"]
 | 判断 | 含义 | 建议 |
 | --- | --- | --- |
 | `processStatus == 1` | 任务成功 | 读取 `videoUrl`、`srcSrtUrl`、`tgtSrtUrl` 等结果字段，具体字段取决于功能。 |
-| `processStatus < 1` | 任务尚未最终完成 | 继续等待并轮询。建议间隔数分钟，不要高频请求。 |
+| `processStatus < 1` | 任务尚未最终完成 | 继续等待并轮询。初始轮询间隔建议 300 秒，不要高频请求；生产接入优先推荐 `callback`。 |
 | `processStatus > 1` | 任务失败或资源异常 | 按下方状态表排查；可自查的问题修复后重新提交，平台或算法问题联系 GhostCut。 |
 
 ## 视频处理状态表
@@ -195,8 +195,9 @@ def handle_process_status(content: dict) -> str:
 
 - [API 总览](./00-api-overview.md)：查看异步任务的通用调用流程。
 - [视频任务状态查询](./11-work-status-query.md)：查看 `/work/status` 的请求体、响应路径和轮询建议。
-- [视频去字幕](./20-erase-video-subtitle.md)：擦除任务成功后通常读取 `videoUrl`。
-- [为视频压制字幕](./22-burn-subtitles.md)：字幕压制任务成功后通常读取 `videoUrl`。
-- [OCR 提取视频字幕](./23-ocr-subtitle-extraction.md)：OCR 成功后通常读取 `srcSrtUrl` / `tgtSrtUrl`。
-- [ASR 提取视频字幕](./24-asr-subtitle-extraction.md)：ASR 成功后通常读取 `srcSrtUrl` / `tgtSrtUrl`。
+- [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：查看 callback 回调格式、验签、重试和幂等规则。
+- [视频去字幕](./21-erase-video-subtitle.md)：擦除任务成功后通常读取 `videoUrl`。
+- [为视频压制字幕](./23-burn-subtitles.md)：字幕压制任务成功后通常读取 `videoUrl`。
+- [OCR 提取视频字幕](./24-ocr-subtitle-extraction.md)：OCR 成功后通常读取 `srcSrtUrl` / `tgtSrtUrl`。
+- [ASR 提取视频字幕](./25-asr-subtitle-extraction.md)：ASR 成功后通常读取 `srcSrtUrl` / `tgtSrtUrl`。
 - [视频语音翻译与重新配音](./31-video-voice-translation.md)：视频翻译成功后通常读取 `videoUrl`，必要时再读取字幕 URL。

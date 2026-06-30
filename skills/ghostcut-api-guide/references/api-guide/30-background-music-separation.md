@@ -107,7 +107,7 @@ print(f"任务创建成功，Work ID: {work_id}")
 
 ### 3. 查询任务状态
 
-创建任务拿到 `work_id` 后，按[视频任务状态查询](./11-work-status-query.md)调用 `/v-w-c/gateway/ve/work/status`。本功能在 `processStatus == 1` 时读取 `videoUrl`；如果 `processStatus > 1`，按[视频处理状态枚举](./91-video-process-status.md)排查失败原因。
+创建任务拿到 `work_id` 后，按[视频任务状态查询](./11-work-status-query.md)调用 `/v-w-c/gateway/ve/work/status`。本功能在 `processStatus == 1` 时读取 `videoUrl`；如果 `processStatus > 1`，按[视频处理状态枚举](./14-video-process-status.md)排查失败原因。生产接入推荐使用 `callback` 接收结果，轮询作为查询和补偿兜底，规则见[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。
 
 ## 完整示例
 
@@ -180,14 +180,17 @@ while True:
 ## Agent 决策规则
 
 - 用户要去除视频背景音乐、分离 BGM、保留人声和环境音时，使用本功能。
+- 本功能为异步任务；生产接入推荐使用 `callback` 接收结果，轮询作为查询和补偿兜底。
 - 固定传 `needWanyin=1`、`wyTaskType=NO_TTS`、`wyNeedText=0`、`removeBgAudio=2`。
 - 本功能会输出处理后的视频结果；查询结果时优先读取 `videoUrl`。
 - 如果用户只想全局静音，不是分离背景音乐，不应使用 `removeBgAudio=2`；全局静音对应 `removeBgAudio=1`。
 
 ## 相关文档
 
-- [API 总览](./00-api-overview.md)：查看公共签名规则、异步任务流程和功能选择入口。
+- [API 总览](./00-api-overview.md)：查看功能选择入口和主要调用流程。
+- [API 凭证与签名](./02-auth-and-sign.md)：查看公共签名规则和常见鉴权错误。
 - [文件上传](./10-file-upload.md)：本地视频需要先上传并获得临时 URL。
 - [视频语音翻译与重新配音](./31-video-voice-translation.md)：如果用户还需要翻译、重新配音或压制译后字幕，使用视频语音翻译能力。
 - [视频任务状态查询](./11-work-status-query.md)：查询作品处理状态并读取 `videoUrl`。
-- [视频处理状态枚举](./91-video-process-status.md)：根据 `processStatus` 判断是否成功、继续轮询或失败。
+- [视频处理状态枚举](./14-video-process-status.md)：根据 `processStatus` 判断是否成功、继续轮询或失败。
+- [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：查看 callback 回调格式、验签、重试和幂等规则。

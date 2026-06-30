@@ -109,7 +109,7 @@
 7. 每个 `items[]` 是否包含 `workDto` 和 `videoEditParamsDto`。
 8. `videoEditParamsDto.type` 是否固定为 `WORK`。
 9. 顶层 `sourceLang`、`lang` 是否符合任务语义。
-10. 如设置 `callback`，是否为可公网访问的回调地址。
+10. 是否已为生产接入设置 `callback`；如设置，是否为可公网访问的回调地址，且已按[异步任务、轮询和回调机制](./15-async-and-callbacks.md)设计验签、重试和幂等处理。
 
 ### 字幕提取检查
 
@@ -168,16 +168,18 @@
 
 ## 相关文档
 
-- [译制出海剪辑 API 总览](./40-series-overview.md)：查看模块流程和任务选择规则。
-- [通用任务结构](./41-series-edit-common-task-structure.md)：查看请求体结构。
-- [任务查询](./42-series-edit-task-list.md)：提交后查询任务处理进度。
-- [项目与视频素材](./49-series-project-and-video-materials.md)：检查 `idSeries`、`idMaterialVideo` 和素材准备状态。
-- [字幕素材管理](./50-series-subtitle-materials.md)：检查 `idVeMaterialSrt` 和字幕内容。
-- [字幕翻译任务](./51-series-subtitle-translation.md)：检查翻译任务和人工审核流程。
+- [译制出海剪辑 API 总览](./51-series-overview.md)：查看模块流程和任务选择规则。
+- [通用任务结构](./52-series-edit-common-task-structure.md)：查看请求体结构。
+- [任务查询](./53-series-edit-task-list.md)：提交后查询任务处理进度。
+- [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：查看 callback 回调格式、验签、重试、幂等和补偿轮询规则。
+- [项目与视频素材](./60-series-project-and-video-materials.md)：检查 `idSeries`、`idMaterialVideo` 和素材准备状态。
+- [字幕素材管理](./61-series-subtitle-materials.md)：检查 `idVeMaterialSrt` 和字幕内容。
+- [字幕翻译任务](./62-series-subtitle-translation.md)：检查翻译任务和人工审核流程。
 
 ## Agent 决策规则
 
 - 外层 `code=200` 表示请求成功，不表示任务内所有视频都已处理成功。
+- 译制出海剪辑任务为异步处理；生产接入推荐通过 `callback` 接收结果，任务查询作为主动查询、补偿兜底和排查入口。
 - 项目、素材、字幕和翻译管理接口通常以 `code=1000` 表示成功；剪辑任务接口通常以 `code=200` 表示请求成功。
 - 外层 `code=500` 时，优先读取 `msg` 和 `trace`。
 - 任何失败排查都应保留 `trace`，并同时记录 `idSeries`、任务接口、请求体摘要。

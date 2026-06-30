@@ -4,22 +4,22 @@
 
 # 视频任务状态查询
 
-> 本文说明普通单视频任务如何调用 `/v-w-c/gateway/ve/work/status` 查询处理状态和结果 URL。状态枚举、错误码和失败排查见[视频处理状态枚举](./91-video-process-status.md)。
+> 本文说明普通单视频任务如何调用 `/v-w-c/gateway/ve/work/status` 查询处理状态和结果 URL。状态枚举、错误码和失败排查见[视频处理状态枚举](./14-video-process-status.md)。
 
 ## 适用范围
 
-本文适用于普通单视频处理能力，也就是创建任务后从 `body.dataList[].id` 拿到作品 ID 的功能：
+本文适用于普通单视频处理能力，也就是创建任务后从 `body.dataList[].id` 拿到作品 ID 的功能。异步任务、轮询和 `callback` 的通用说明见[异步任务、轮询和回调机制](./15-async-and-callbacks.md)：
 
 | 功能 | 创建任务文档 | 成功后常读字段 |
 | --- | --- | --- |
-| 视频去字幕 | [视频去字幕](./20-erase-video-subtitle.md) | `videoUrl` |
-| 字幕压制 | [为视频压制字幕](./22-burn-subtitles.md) | `videoUrl` |
-| OCR 字幕提取 | [OCR 提取视频字幕](./23-ocr-subtitle-extraction.md) | `srcSrtUrl`、`tgtSrtUrl` |
-| ASR 字幕提取 | [ASR 提取视频字幕](./24-asr-subtitle-extraction.md) | `srcSrtUrl`、`tgtSrtUrl` |
+| 视频去字幕 | [视频去字幕](./21-erase-video-subtitle.md) | `videoUrl` |
+| 字幕压制 | [为视频压制字幕](./23-burn-subtitles.md) | `videoUrl` |
+| OCR 字幕提取 | [OCR 提取视频字幕](./24-ocr-subtitle-extraction.md) | `srcSrtUrl`、`tgtSrtUrl` |
+| ASR 字幕提取 | [ASR 提取视频字幕](./25-asr-subtitle-extraction.md) | `srcSrtUrl`、`tgtSrtUrl` |
 | 背景音乐去除/分离 | [背景音乐去除/分离](./30-background-music-separation.md) | `videoUrl` |
 | 视频语音翻译与重新配音 | [视频语音翻译与重新配音](./31-video-voice-translation.md) | `videoUrl`，必要时再读取字幕 URL |
 
-本文的签名方式、请求体格式和响应读取逻辑，也可用于译制出海场景下继续查询作品详情；但译制出海不能直接从提交任务接口拿作品 ID，而应先通过 `task/list` 获取任务 ID，再按本文方式调用 `/work/status`，并以该接口实际返回的作品详情为准。相关流程见[译制出海任务查询](./42-series-edit-task-list.md)。
+本文的签名方式、请求体格式和响应读取逻辑，也可用于译制出海场景下继续查询作品详情；但译制出海不能直接从提交任务接口拿作品 ID，而应先通过 `task/list` 获取任务 ID，再按本文方式调用 `/work/status`，并以该接口实际返回的作品详情为准。相关流程见[译制出海任务查询](./53-series-edit-task-list.md)。
 
 译制出海任务串联流程中，如果后续任务需要填写 `workDto.materialWorkIds`，应使用本接口响应里的作品 ID，精确路径是 `body.content[].id`；单视频结果通常读取 `body.content[0].id`。
 
@@ -46,7 +46,7 @@ AppSign: <generated_app_sign>
 | --- | --- | --- |
 | `idWorks` | `string[]` / `number[]` | 查询 ID 列表。普通单视频任务中通常传作品 ID；译制出海场景下通常先传 `task/list` 返回的任务 ID，再读取本接口返回的作品详情。 |
 
-签名规则和 `api_post` 封装方式见 [API 总览](./00-api-overview.md)。
+签名规则和 `api_post` 封装方式见 [API 凭证与签名](./02-auth-and-sign.md)。
 
 ## 响应读取
 
@@ -86,8 +86,8 @@ status = content["processStatus"]
 | 判断 | 含义 | 下一步 |
 | --- | --- | --- |
 | `processStatus == 1` | 任务成功 | 按具体功能读取 `videoUrl`、`srcSrtUrl`、`tgtSrtUrl` 等结果字段。 |
-| `processStatus < 1` | 任务仍在处理中 | 继续等待并轮询。建议间隔数分钟，避免高频请求。 |
-| `processStatus > 1` | 任务失败或资源异常 | 读取 `errorDetail` 等错误信息，并按[视频处理状态枚举](./91-video-process-status.md)排查。 |
+| `processStatus < 1` | 任务仍在处理中 | 继续等待并轮询。初始轮询间隔建议 300 秒，避免高频请求；生产接入优先推荐 `callback`。 |
+| `processStatus > 1` | 任务失败或资源异常 | 读取 `errorDetail` 等错误信息，并按[视频处理状态枚举](./14-video-process-status.md)排查。 |
 
 外层 `code=1000` 只表示本次查询接口调用成功，不代表视频任务已经处理成功。必须继续检查 `body.content[].processStatus`。
 
@@ -158,10 +158,11 @@ def query_work_status(work_id: str) -> dict:
 
 ## 轮询建议
 
-- 创建任务接口返回作品 ID 后，再调用本文接口查询最终状态。
-- 处理类任务通常需要等待，建议间隔数分钟轮询，不要高频请求。
+- 创建任务接口返回作品 ID 后，可调用本文接口查询最终状态。
+- 生产接入推荐优先通过 `callback` 接收结果，轮询用于主动查询、补偿扫描和兜底确认；`callback` 规则见[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。
+- 处理类任务通常需要等待，初始轮询间隔建议 300 秒，不要高频请求。
 - 批量传多个 `idWorks` 时，应优先根据响应项中的作品 ID 匹配结果；如果响应项没有返回 ID，再结合调用方保存的请求顺序谨慎处理。
-- 查询到 `processStatus > 1` 后，不要继续无意义轮询，应根据[视频处理状态枚举](./91-video-process-status.md)判断是否修复输入、重试或联系 GhostCut。
+- 查询到 `processStatus > 1` 后，不要继续无意义轮询，应根据[视频处理状态枚举](./14-video-process-status.md)判断是否修复输入、重试或联系 GhostCut。
 
 ## Agent 决策规则
 
@@ -170,10 +171,12 @@ def query_work_status(work_id: str) -> dict:
 - 译制出海场景中，`/work/status` 返回的作品 ID 路径是 `body.content[].id`；单视频结果常读 `body.content[0].id`，这个值才可用于后续 `workDto.materialWorkIds`。
 - 视频去字幕、字幕压制、背景音乐分离、视频语音翻译成功后通常读取 `videoUrl`。
 - OCR/ASR 字幕提取成功后通常读取 `srcSrtUrl` / `tgtSrtUrl`，不要等待处理后视频。
-- 译制出海模块应先查[译制出海任务查询](./42-series-edit-task-list.md)拿到任务 ID；如果还需要作品详情、作品 ID 或播放地址，再按本文方式调用 `/work/status`，并以返回的作品详情为准。
+- 译制出海模块应先查[译制出海任务查询](./53-series-edit-task-list.md)拿到任务 ID；如果还需要作品详情、作品 ID 或播放地址，再按本文方式调用 `/work/status`，并以返回的作品详情为准。
 
 ## 相关文档
 
-- [API 总览](./00-api-overview.md)：查看通用调用流程、认证和签名规则。
+- [API 总览](./00-api-overview.md)：查看功能选择入口和主要调用流程。
+- [API 凭证与签名](./02-auth-and-sign.md)：查看认证和签名规则。
 - [文件上传](./10-file-upload.md)：本地文件先上传并获得临时 URL。
-- [视频处理状态枚举](./91-video-process-status.md)：查看 `processStatus` 状态值、错误码和排查建议。
+- [视频处理状态枚举](./14-video-process-status.md)：查看 `processStatus` 状态值、错误码和排查建议。
+- [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：查看 callback 回调格式、验签、重试和幂等规则。

@@ -60,7 +60,7 @@ AppSign: generated_app_sign
 | --- | --- | --- | --- |
 | `seriesName` | `String` | 是 | 项目或剧集名称。 |
 | `remark` | `String` | 否 | 备注。 |
-| `callback` | `String` | 否 | 本剧集下作品合成后的默认回调地址。 |
+| `callback` | `String` | 否 | 本剧集下作品合成后的默认回调地址。生产接入推荐设置；回调格式、验签、重试和幂等规则见[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。 |
 | `isDongman` | `Integer` | 否 | 剧种：`0` 真人剧，`1` AI 漫剧，`2` AI 真人剧，`3` 其它。 |
 
 响应中 `body.id` 就是 `idSeries`：
@@ -190,7 +190,7 @@ POST https://api.zhaoli.com/v-w-c/gateway/ve/series/video/import
 | `url` | `String` | 是 | 可直接访问的视频 URL。 |
 | `materialName` | `String` | 是 | 素材标题。 |
 | `fileName` | `String` | 否 | 素材文件名。 |
-| `callback` | `String` | 否 | 素材预处理进入最终状态时回调最新素材对象。 |
+| `callback` | `String` | 否 | 素材预处理进入最终状态时回调最新素材对象。生产接入推荐设置。 |
 
 请求示例：
 
@@ -212,7 +212,7 @@ POST https://api.zhaoli.com/v-w-c/gateway/ve/series/video/import
 | `processStatus=1` | 预处理完成，可用。 |
 | `processStatus>1` | 预处理失败。 |
 
-如果没有传 `callback`，应通过素材列表接口轮询。
+如果没有传 `callback`，应通过素材列表接口轮询。补偿轮询的初始间隔建议 300 秒，完整规则见[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。
 
 ### 查询项目内视频素材列表
 
@@ -338,15 +338,17 @@ POST https://api.zhaoli.com/v-w-c/gateway/ve/series/video/replace
 
 ## 相关文档
 
-- [译制出海剪辑 API 总览](./40-series-overview.md)：查看完整生命周期。
-- [译制出海通用任务结构](./41-series-edit-common-task-structure.md)：查看 `idSeries`、`items[]` 和 `idMaterialVideo` 的使用位置。
+- [译制出海剪辑 API 总览](./51-series-overview.md)：查看完整生命周期。
+- [译制出海通用任务结构](./52-series-edit-common-task-structure.md)：查看 `idSeries`、`items[]` 和 `idMaterialVideo` 的使用位置。
 - [GhostCut 本地文件上传 API](./10-file-upload.md)：上传本地视频、字幕和替换素材文件。
-- [译制出海字幕素材管理](./50-series-subtitle-materials.md)：上传、创建、查询和更新字幕素材。
-- [译制出海错误与检查清单](./48-series-edit-errors-and-checklist.md)：提交前排查常见问题。
+- [译制出海字幕素材管理](./61-series-subtitle-materials.md)：上传、创建、查询和更新字幕素材。
+- [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：查看 callback 回调格式、验签、重试、幂等和补偿轮询规则。
+- [译制出海错误与检查清单](./59-series-edit-errors-and-checklist.md)：提交前排查常见问题。
 
 ## Agent 决策规则
 
 - 用户只有项目名称，没有 `idSeries` 时，先查项目列表；查不到再创建项目。
+- 创建项目、导入视频或提交处理任务时，生产接入推荐设置 `callback`；轮询用于素材状态查询和补偿兜底。
 - 用户给本地视频路径时，走 `video_series` 上传；用户给公网视频 URL 时，走 `series/video/import`。
 - 不要把普通上传返回的临时视频 URL 当成 `idMaterialVideo`；译制出海任务需要素材 ID。
 - 创建或替换视频素材后，不要立刻提交剪辑任务；先查询素材状态，等 `downloadStatus=1` 且 `processStatus=1`。

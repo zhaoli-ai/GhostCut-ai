@@ -148,7 +148,7 @@ print(f"任务创建成功，Work ID: {work_id}")
 | `VOICE_CLONE_PRO` | 情感克隆模式。系统自动复刻原视频声线和情感，不需要手动配置角色音色。 |
 | `NO_TTS` | 不配音，保留原视频声音。选此项时 `removeBgAudio` 只能传 `2` 或不传。 |
 | `NO_TTS_VOCAL` | 不配音且去人声，仅保留原视频背景音。 |
-| `ONLY_ASR` | 仅执行 ASR 提取字幕，不执行配音。独立用法参考 [ASR 提取视频字幕](./24-asr-subtitle-extraction.md)。 |
+| `ONLY_ASR` | 仅执行 ASR 提取字幕，不执行配音。独立用法参考 [ASR 提取视频字幕](./25-asr-subtitle-extraction.md)。 |
 
 ## `wyVoiceParam` 配音与字幕配置
 
@@ -292,7 +292,7 @@ print(f"任务创建成功，Work ID: {work_id}")
 
 ## 查询任务状态
 
-创建任务拿到 `work_id` 后，按[视频任务状态查询](./11-work-status-query.md)调用 `/v-w-c/gateway/ve/work/status`。本功能在 `processStatus == 1` 时优先读取 `videoUrl`；如果还需要独立字幕文件，再检查返回内容中的字幕 URL 字段。若 `processStatus > 1`，按[视频处理状态枚举](./91-video-process-status.md)排查失败原因。
+创建任务拿到 `work_id` 后，按[视频任务状态查询](./11-work-status-query.md)调用 `/v-w-c/gateway/ve/work/status`。本功能在 `processStatus == 1` 时优先读取 `videoUrl`；如果还需要独立字幕文件，再检查返回内容中的字幕 URL 字段。若 `processStatus > 1`，按[视频处理状态枚举](./14-video-process-status.md)排查失败原因。生产接入推荐使用 `callback` 接收结果，轮询作为查询和补偿兜底，规则见[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。
 
 ## 完整示例
 
@@ -391,6 +391,7 @@ while True:
 ## Agent 决策规则
 
 - 用户要“翻译视频并重新配音”“视频语音翻译”“译制视频”时，优先使用本功能。
+- 本功能为异步任务；生产接入推荐使用 `callback` 接收结果，轮询作为查询和补偿兜底。
 - 默认经典模式完整配音链路使用 `needWanyin=1`、`wyTaskType=FULL`，并配置 `sourceLang`、`lang`、`wyVoiceParam.character_voices`。
 - 如果用户只要配音不要画面字幕，传 `wyNeedText=0`，`wyVoiceParam` 可以只包含 `character_voices`。
 - 如果用户既要配音又要压制译后字幕，传 `wyNeedText=1`，`wyVoiceParam` 同时包含 `character_voices` 和 `font_param`。
@@ -402,10 +403,12 @@ while True:
 
 ## 相关文档
 
-- [API 总览](./00-api-overview.md)：查看公共签名规则、异步任务流程和功能选择入口。
+- [API 总览](./00-api-overview.md)：查看功能选择入口和主要调用流程。
+- [API 凭证与签名](./02-auth-and-sign.md)：查看公共签名规则和常见鉴权错误。
 - [文件上传](./10-file-upload.md)：本地视频或本地 SRT 需要先上传并获得临时 URL。
 - [公共音色查询接口](./32-public-voice-characters.md)：没有指定音色 ID 时，先查询公共音色并获取 `id_ve_voice_character`。
-- [字幕样式和字体配置补充](./25-subtitle-style-and-fonts.md)：配置译后字幕的字体、描边、阴影和背景。
-- [不同功能支持的语言列表](./90-language-support.md)：确认 `sourceLang` 和 `lang` 的可用值。
+- [字幕样式和字体配置补充](./26-subtitle-style-and-fonts.md)：配置译后字幕的字体、描边、阴影和背景。
+- [不同功能支持的语言列表](./13-language-support.md)：确认 `sourceLang` 和 `lang` 的可用值。
 - [视频任务状态查询](./11-work-status-query.md)：查询作品处理状态并读取 `videoUrl`。
-- [视频处理状态枚举](./91-video-process-status.md)：根据 `processStatus` 判断是否成功、继续轮询或失败。
+- [视频处理状态枚举](./14-video-process-status.md)：根据 `processStatus` 判断是否成功、继续轮询或失败。
+- [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：查看 callback 回调格式、验签、重试和幂等规则。

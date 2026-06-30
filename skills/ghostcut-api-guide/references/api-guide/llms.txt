@@ -2,40 +2,65 @@
 
 ## 编号规则
 
-- `00`：总览入口。
-- `10-11`：通用准备和状态查询能力。
-- `20-32`：普通单视频处理能力。
-- `40-52`：译制出海模块。主索引只列模块入口，子文档见 [译制出海剪辑 API 模块](./40-series-overview.md)。
-- `90-91`：参考附录。
-- `99`：文档维护。
+- `00-20`：通用基础能力。
+- `21-50`：视频 AI 处理能力。
+- `51-80`：译制出海模块。
+- `81-90`：图片 AI 处理能力。
+- `91-98`：参考附录。
+- `99`：维护资料。
 
-## 入口与通用能力
+## 入口文档
 
-- [API 总览](./00-api-overview.md)：概览 GhostCut API 能力，说明公共调用流程、签名规则和文档路由。
+- [API 总览](./00-api-overview.md)：概览 GhostCut API 能力，说明功能选择、公共流程和文档路由。
+- [5 分钟快速上手](./01-quickstart.md)：帮助新用户获取凭证、使用示例 payload 创建视频去文字任务，并查询结果。
+
+## 通用基础
+
+- [API 凭证与签名](./02-auth-and-sign.md)：说明 `AppKey`、`AppSecret` 获取方式、`AppSign` 签名规则和常见鉴权错误。
+- [素材 URL 与格式要求](./03-media-requirements.md)：说明本地文件上传、视频格式、图片格式、URL 字符和批量数量等通用约束。
 - [文件上传](./10-file-upload.md)：将本地 SRT、图片或视频上传到 GhostCut，并获取供后续 API 调用使用的临时 URL。
 - [视频任务状态查询](./11-work-status-query.md)：使用 `/v-w-c/gateway/ve/work/status` 轮询普通单视频任务状态并读取结果 URL。
+- [视频基础处理](./12-video-basic-processing.md)：使用 `/work/free` 创建基础剪辑、截取、分辨率、智能优化、滤镜、镜像、缩放和画面移动任务。
+- [不同功能支持的语言列表](./13-language-support.md)：按功能整理源语言、目标语言和完整语言代码表。
+- [视频处理状态枚举](./14-video-process-status.md)：说明 `processStatus` 状态值、公共错误码和失败排查建议。
+- [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：说明视频和图片异步任务模型、轮询策略、callback 回调格式、`Callback-Sign` 验签、重试和幂等规则。
 
-## 单视频处理能力
+## 视频 AI 处理
 
-- [视频去字幕](./20-erase-video-subtitle.md)：移除字幕、文字、logo 或其他不需要的区域。
-- [字幕 mask 补充说明](./21-inpaint-masks-supplement.md)：说明擦除模型差异、遮罩框类型、时间字段和相对坐标规则。
-- [为视频压制字幕](./22-burn-subtitles.md)：将已有 SRT 字幕文件硬压制到视频画面中，并说明字幕样式和外挂字幕配置。
-- [OCR 提取视频字幕](./23-ocr-subtitle-extraction.md)：通过图像 OCR 识别视频画面中的硬字幕，并输出 SRT 文件。
-- [ASR 提取视频字幕](./24-asr-subtitle-extraction.md)：通过音频语音识别提取台词，并输出 SRT 文件。
-- [字幕样式和字体配置补充](./25-subtitle-style-and-fonts.md)：说明 `wyVoiceParam.font_param` 的 V1/V2 字幕样式、字体文件、描边、阴影和背景配置。
+- [视频去字幕](./21-erase-video-subtitle.md)：移除字幕、文字、logo 或其他不需要的区域。
+- [字幕 mask 补充说明](./22-inpaint-masks-supplement.md)：说明擦除模型差异、遮罩框类型、时间字段和相对坐标规则。
+- [为视频压制字幕](./23-burn-subtitles.md)：将已有 SRT 字幕文件硬压制到视频画面中，并说明字幕样式和外挂字幕配置。
+- [OCR 提取视频字幕](./24-ocr-subtitle-extraction.md)：通过图像 OCR 识别视频画面中的硬字幕，并输出 SRT 文件。
+- [ASR 提取视频字幕](./25-asr-subtitle-extraction.md)：通过音频语音识别提取台词，并输出 SRT 文件。
+- [字幕样式和字体配置补充](./26-subtitle-style-and-fonts.md)：说明 `wyVoiceParam.font_param` 的 V1/V2 字幕样式、字体文件、描边、阴影和背景配置。
 - [背景音乐去除/分离](./30-background-music-separation.md)：去除原视频背景音中的音乐旋律，保留人声和环境效果音。
 - [视频语音翻译与重新配音](./31-video-voice-translation.md)：翻译视频并生成 AI 新配音，支持字幕压制、外挂 SRT 和精准台词时间轴。
 - [公共音色查询接口](./32-public-voice-characters.md)：查询公共音色角色、语言试听和标签，并获取 `id_ve_voice_character`。
 
+## 图片 AI 处理
+
+- [AI 图片处理](./81-image-processing.md)：图片文字识别与擦除、图片多语言文字翻译、翻译结果二次微调和重新合成。
+
 ## 译制出海模块
 
-- [译制出海剪辑 API 模块](./40-series-overview.md)：剧集/项目级批量任务接口入口，覆盖字幕提取、字幕擦除、AI 配音、字幕压制和音频分离。
+- [译制出海剪辑 API 模块](./51-series-overview.md)：剧集/项目级批量任务接口入口，覆盖字幕提取、字幕擦除、AI 配音、字幕压制和音频分离。
+- [译制出海通用任务结构](./52-series-edit-common-task-structure.md)：通用请求结构、字段来源和 Python 提交通用模板。
+- [译制出海任务查询](./53-series-edit-task-list.md)：查询译制出海任务列表和处理进度。
+- [译制出海字幕提取](./54-series-subtitle-extract.md)：剧集/项目级 ASR 与 OCR 字幕提取。
+- [译制出海字幕擦除](./55-series-subtitle-inpaint.md)：剧集/项目级字幕擦除和遮罩框规则。
+- [译制出海 AI 配音](./56-series-dubbing.md)：经典配音、超真实音色和情感克隆配音。
+- [译制出海字幕压制](./57-series-subtitle-burn.md)：原视频或去文字后视频的字幕压制。
+- [译制出海音频分离](./58-series-audio-separate.md)：原视频或去文字后视频的音频分离。
+- [译制出海错误与检查清单](./59-series-edit-errors-and-checklist.md)：错误示例、提交前检查项和排查规则。
+- [译制出海项目与视频素材](./60-series-project-and-video-materials.md)：项目、视频素材和提交前素材检查。
+- [译制出海字幕素材管理](./61-series-subtitle-materials.md)：字幕素材上传、创建、查询、更新和删除。
+- [译制出海字幕翻译任务](./62-series-subtitle-translation.md)：字幕翻译任务、查询和结果获取。
+- [译制出海翻译术语库](./63-series-translation-glossary.md)：术语插入、查询、更新、删除和字幕翻译关联。
 
 ## 参考附录
 
-- [不同功能支持的语言列表](./90-language-support.md)：按功能整理源语言、目标语言和完整语言代码表。
-- [视频处理状态枚举](./91-video-process-status.md)：说明 `processStatus` 状态值、公共错误码和失败排查建议。
+暂无独立参考附录。通用语言、状态和错误码已归入“通用基础”。
 
-## 文档维护
+## 维护资料
 
 - [Cursor 配置](./99-cursor.md)：配置 Cursor 以辅助文档编写流程。

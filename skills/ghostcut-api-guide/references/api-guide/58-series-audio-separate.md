@@ -29,11 +29,11 @@ gateway/ve/series/edit/task/audio/separate
 | 音频分离参数 | 固定传 `wyTaskType=NO_TTS`、`removeBgAudio=2`、`wyNeedText=0`。 |
 | 字幕和音色 | 本任务不需要字幕输入，不需要 `font_param`，也不需要 `character_voices[]`。 |
 | 基于擦除后视频 | 如果要基于字幕擦除后的作品分离音频，`workDto.materialWorkIds` 必须来自 `/work/status.body.content[].id`。 |
-| 结果查询 | 提交后先查 [任务查询](./42-series-edit-task-list.md)，需要作品 ID 或播放地址时再查 [视频任务状态查询](./11-work-status-query.md)。 |
+| 结果查询 | 生产接入推荐通过 `callback` 接收结果；也可查 [任务查询](./53-series-edit-task-list.md)，需要作品 ID 或播放地址时再查 [视频任务状态查询](./11-work-status-query.md)。 |
 
 ## 原视频音频分离
 
-本任务的处理结果是去 BGM 后的视频。提交后通过 [任务查询](./42-series-edit-task-list.md) 查看任务状态和处理结果。
+本任务的处理结果是去 BGM 后的视频。生产接入推荐通过 `callback` 接收结果；也可通过 [任务查询](./53-series-edit-task-list.md) 查看任务状态和处理结果。
 
 关键参数：
 
@@ -159,19 +159,21 @@ print(json.dumps(result, ensure_ascii=False, indent=2))
 }
 ```
 
-`materialWorkIds` 用于复用已有作品结果，不是视频素材 ID 或字幕擦除任务 ID。先通过 [任务查询](./42-series-edit-task-list.md) 的 `task/list` 查询前一步任务结果，找到对应的最新字幕擦除任务，读取 `body[].id` 作为任务 ID；再按[视频任务状态查询](./11-work-status-query.md)的方式调用 `/work/status` 查询该任务下的作品详情，从响应的 `body.content[].id` 读取作品 ID，并填入 `workDto.materialWorkIds`。
+`materialWorkIds` 用于复用已有作品结果，不是视频素材 ID 或字幕擦除任务 ID。先通过 [任务查询](./53-series-edit-task-list.md) 的 `task/list` 查询前一步任务结果，找到对应的最新字幕擦除任务，读取 `body[].id` 作为任务 ID；再按[视频任务状态查询](./11-work-status-query.md)的方式调用 `/work/status` 查询该任务下的作品详情，从响应的 `body.content[].id` 读取作品 ID，并填入 `workDto.materialWorkIds`。
 
 ## 相关文档
 
-- [译制出海剪辑 API 总览](./40-series-overview.md)：查看模块流程和任务选择规则。
-- [通用任务结构](./41-series-edit-common-task-structure.md)：查看 `workDto`、`videoEditParamsDto` 和 Python 提交通用模板。
-- [字幕擦除](./44-series-subtitle-inpaint.md)：先擦除字幕，再基于结果视频分离音频。
-- [任务查询](./42-series-edit-task-list.md)：提交后查询任务处理进度。
-- [项目与视频素材](./49-series-project-and-video-materials.md)：确认素材准备状态。
+- [译制出海剪辑 API 总览](./51-series-overview.md)：查看模块流程和任务选择规则。
+- [通用任务结构](./52-series-edit-common-task-structure.md)：查看 `workDto`、`videoEditParamsDto` 和 Python 提交通用模板。
+- [字幕擦除](./55-series-subtitle-inpaint.md)：先擦除字幕，再基于结果视频分离音频。
+- [任务查询](./53-series-edit-task-list.md)：提交后查询任务处理进度。
+- [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：查看 callback 回调格式、验签、重试、幂等和补偿轮询规则。
+- [项目与视频素材](./60-series-project-and-video-materials.md)：确认素材准备状态。
 
 ## Agent 决策规则
 
 - 用户要“分离背景音乐”“去掉 BGM”或“生成去 BGM 后的视频”时，用本接口。
+- 本功能为异步任务；生产接入推荐传入 `callback` 接收结果，轮询作为查询和补偿兜底。
 - 音频分离固定传 `removeBgAudio=2`。
 - 本任务不需要字幕文本，传 `wyNeedText=0`。
 - 如果要基于去字后结果处理，必须传 `workDto.materialWorkIds`；取值来自 `/work/status` 的 `body.content[].id`。

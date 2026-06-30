@@ -179,7 +179,7 @@ Python 中建议先构造对象，再用 `json.dumps(..., ensure_ascii=False, se
 
 ### 3. 查询任务状态
 
-创建任务拿到 `work_id` 后，按[视频任务状态查询](./11-work-status-query.md)调用 `/v-w-c/gateway/ve/work/status`。本功能在 `processStatus == 1` 时读取 `videoUrl`；如果 `processStatus > 1`，按[视频处理状态枚举](./91-video-process-status.md)排查失败原因。
+创建任务拿到 `work_id` 后，按[视频任务状态查询](./11-work-status-query.md)调用 `/v-w-c/gateway/ve/work/status`。本功能在 `processStatus == 1` 时读取 `videoUrl`；如果 `processStatus > 1`，按[视频处理状态枚举](./14-video-process-status.md)排查失败原因。生产接入推荐使用 `callback` 接收结果，轮询作为查询和补偿兜底，规则见[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。
 
 ## 完整示例
 
@@ -253,7 +253,7 @@ work_id = task["body"]["dataList"][0]["id"]
 print(f"任务创建成功，Work ID: {work_id}")
 
 
-# 2. 轮询任务结果，处理一般较慢，建议等待 10～20 分钟后查询
+# 2. 轮询任务结果；生产接入推荐 callback，补偿轮询初始间隔建议 300 秒
 while True:
     result = api_post("/v-w-c/gateway/ve/work/status", {
         "idWorks": [work_id]
@@ -311,10 +311,12 @@ while True:
 
 ## 推荐阅读
 
-- [API 总览](./00-api-overview.md)：查看公共签名规则、异步任务流程和功能选择入口。
+- [API 总览](./00-api-overview.md)：查看功能选择入口和主要调用流程。
+- [API 凭证与签名](./02-auth-and-sign.md)：查看公共签名规则和常见鉴权错误。
 - [文件上传](./10-file-upload.md)：本地视频或本地 SRT 需要先上传并获得临时 URL。
-- [字幕样式和字体配置补充](./25-subtitle-style-and-fonts.md)：进一步配置 `wyVoiceParam.font_param`。
-- [视频去字幕](./20-erase-video-subtitle.md)：如果原视频已有硬字幕，可先擦除再压制新字幕。
+- [字幕样式和字体配置补充](./26-subtitle-style-and-fonts.md)：进一步配置 `wyVoiceParam.font_param`。
+- [视频去字幕](./21-erase-video-subtitle.md)：如果原视频已有硬字幕，可先擦除再压制新字幕。
 - [视频任务状态查询](./11-work-status-query.md)：查询作品处理状态并读取 `videoUrl`。
-- [视频处理状态枚举](./91-video-process-status.md)：根据 `processStatus` 判断是否成功、继续轮询或失败。
+- [视频处理状态枚举](./14-video-process-status.md)：根据 `processStatus` 判断是否成功、继续轮询或失败。
+- [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：查看 callback 回调格式、验签、重试和幂等规则。
 - 鬼手剪辑 API 域名：`https://api.zhaoli.com`

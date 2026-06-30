@@ -1,0 +1,9 @@
+{
+  "urls": [
+    "https://gc100.cdn.izhaoli.cn/demo/1691660164246.mp4"
+  ],
+  "needChineseOcclude": 2,
+  "videoInpaintLang": "all",
+  "extraOptions": "{\"extra_inpaint_config\":{\"model\":\"advanced_lite\"}}",
+  "videoInpaintMasks": "[{\"type\":\"remove_only_ocr\",\"start\":0,\"end\":99999,\"region\":[[0,0],[1,0],[1,1],[0,1]]}]"
+}

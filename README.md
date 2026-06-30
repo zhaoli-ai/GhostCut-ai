@@ -8,7 +8,7 @@ GhostCut-ai contains Agent-oriented skills and reference material for using Ghos
 skills/ghostcut-api-guide/
 ```
 
-这个 skill 面向 Codex、Claude Code、Cursor、OpenCode 等支持 Agent Skills 的工具使用，帮助 Agent 选择 GhostCut API 调用流程、组装请求体、解释参数、查询任务状态，并处理本地文件上传、字幕擦除、字幕压制、OCR/ASR 字幕提取、背景音乐分离、视频翻译配音、公共音色查询、语言支持和“译制出海”模块。
+这个 skill 面向 Codex、Claude Code、Cursor、OpenCode 等支持 Agent Skills 的工具使用，帮助 Agent 选择 GhostCut API 调用流程、组装请求体、解释参数、查询任务状态、处理异步轮询和 callback 回调，并处理本地文件上传、视频基础处理、字幕擦除、字幕压制、OCR/ASR 字幕提取、背景音乐分离、视频翻译配音、公共音色查询、AI 图片处理、语言支持和“译制出海”模块。
 
 ## 目录结构
 
@@ -18,6 +18,11 @@ skills/
     ├── SKILL.md
     ├── agents/
     │   └── openai.yaml
+    ├── examples/
+    │   ├── .env.example
+    │   ├── image-translate.payload.json
+    │   ├── video-inpaint-advanced-lite-fullscreen.payload.json
+    │   └── work-status.payload.json
     ├── references/
     │   ├── index.md
     │   ├── sample-assets.md
@@ -119,6 +124,7 @@ skills/ghostcut-api-guide/SKILL.md
 该 skill 覆盖：
 
 - 本地文件上传并获取可用于 GhostCut API 的 URL
+- 视频基础剪辑、截取、分辨率、智能优化、滤镜、镜像、缩放和画面移动
 - 视频去字幕、去文字、去 logo 或固定区域擦除
 - 字幕压制和字幕样式配置
 - OCR 画面字幕提取
@@ -126,21 +132,63 @@ skills/ghostcut-api-guide/SKILL.md
 - 背景音乐去除/分离
 - 视频翻译并重新配音
 - 公共音色查询
+- 图片文字擦除、图片翻译和翻译结果二次微调
 - 译制出海项目、素材、字幕和批量任务流程
+- 异步任务轮询、callback 回调、验签、重试和幂等处理
 - 任务状态查询、结果读取和错误排查
 - 不同功能支持的语言列表
+
+## 快速上手
+
+新用户建议先阅读：
+
+```text
+skills/ghostcut-api-guide/references/api-guide/01-quickstart.md
+```
+
+它会引导你完成一个最小闭环：获取 `AppKey` 和 `AppSecret`、设置环境变量、使用示例 payload 创建“视频去文字 / 高擦 Lite / 1 个全屏框选范围”任务，并查询处理结果。
+
+可复制示例位于：
+
+```text
+skills/ghostcut-api-guide/examples/
+```
 
 ## API 凭证
 
 GhostCut API 通常使用 `AppKey` 和 `AppSecret` 生成 `AppSign`。
 
-`AppKey` 和 `AppSecret` 可在鬼手剪辑网站的账号设置或账户信息中查看。
+新用户可先打开[鬼手剪辑官网](https://cn.jollytoday.com/)注册或登录账号。登录后直接访问[用户中心](https://cn.jollytoday.com/center/)，在 `API secret key` 一栏查看 `AppKey` 和 `AppSecret`。
+
+完整鉴权和签名规则见：
+
+```text
+skills/ghostcut-api-guide/references/api-guide/02-auth-and-sign.md
+```
 
 不要把真实密钥写入仓库、文档或提交记录。需要运行脚本时，建议使用环境变量：
 
 ```bash
 export GHOSTCUT_APP_KEY="your_app_key"
 export GHOSTCUT_APP_SECRET="your_app_secret"
+```
+
+设置好环境变量后，可以直接使用随附的视频去文字最小示例生成一次签名，确认本地凭证读取正常：
+
+```bash
+python skills/ghostcut-api-guide/scripts/ghostcut_api.py sign --payload skills/ghostcut-api-guide/examples/video-inpaint-advanced-lite-fullscreen.payload.json
+```
+
+如果你已经准备了自己的请求体文件，也可以替换成自己的 payload：
+
+```bash
+python skills/ghostcut-api-guide/scripts/ghostcut_api.py sign --payload payload.json
+```
+
+视频、图片、SRT 的 URL 与格式要求见：
+
+```text
+skills/ghostcut-api-guide/references/api-guide/03-media-requirements.md
 ```
 
 ## 演示视频
@@ -152,6 +200,14 @@ https://gc100.cdn.izhaoli.cn/demo/1691660164246.mp4
 ```
 
 该视频只适合演示普通视频 URL 如何填写。涉及 ASR、配音、角色识别、字幕翻译或真实业务质量验证时，应换成用户自己的视频。
+
+当用户暂时没有可用图片时，可以使用演示图片：
+
+```text
+https://gc100.cdn.izhaoli.cn/ve_material_image/A-00b4943646344cfc/e2d6dd82903f4059bd94c9b660f5f7b6/1782789120948.webp
+```
+
+该图片只适合演示图片处理 URL 如何填写。涉及真实商品图、海报图或多语言排版质量验证时，应换成用户自己的图片。
 
 ## 脚本说明
 

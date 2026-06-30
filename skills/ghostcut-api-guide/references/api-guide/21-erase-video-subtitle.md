@@ -119,12 +119,12 @@ print(f"任务创建成功，Work ID: {work_id}")
 | `urls` | `string[]` | 待处理的视频 URL 列表 |
 | `needChineseOcclude` | `number` | 必传，视频擦除功能模式，1：全屏自动擦除（仅支持基础模型） 2：按照 videoInpaintMasks 指定擦除区域（支持多种模型） |
 | `videoInpaintLang` | `string` | 必传，需要去除的文字语言。目前支持 all, zh, en, ja, ko, ar。 |
-| `videoInpaintMasks` | `string` | JSON 字符串形式的视频区域框配置。`needChineseOcclude=2` 时必传，使用方式参考[字幕 mask 补充说明](./21-inpaint-masks-supplement.md)。 |
+| `videoInpaintMasks` | `string` | JSON 字符串形式的视频区域框配置。`needChineseOcclude=2` 时必传，使用方式参考[字幕 mask 补充说明](./22-inpaint-masks-supplement.md)。 |
 | `extraOptions` | `string` | (JSON字符串) 擦除模型。结构如下，{"extra_inpaint_config": {"model": "advanced_lite"}}|
 
 ### 3. 查询任务状态
 
-创建任务拿到 `work_id` 后，按[视频任务状态查询](./11-work-status-query.md)调用 `/v-w-c/gateway/ve/work/status`。本功能在 `processStatus == 1` 时读取 `videoUrl`；如果 `processStatus > 1`，按[视频处理状态枚举](./91-video-process-status.md)排查失败原因。
+创建任务拿到 `work_id` 后，按[视频任务状态查询](./11-work-status-query.md)调用 `/v-w-c/gateway/ve/work/status`。本功能在 `processStatus == 1` 时读取 `videoUrl`；如果 `processStatus > 1`，按[视频处理状态枚举](./14-video-process-status.md)排查失败原因。生产接入推荐使用 `callback` 接收结果，轮询作为查询和补偿兜底，规则见[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。
 
 ## 完整示例
 
@@ -174,7 +174,7 @@ work_id = task["body"]["dataList"][0]["id"]
 print(f"任务创建成功，Work ID: {work_id}")
 
 
-# 2. 轮询任务结果，处理一般较慢，建议等待 10～20 分钟后查询
+# 2. 轮询任务结果；生产接入推荐 callback，补偿轮询初始间隔建议 300 秒
 while True:
     result = api_post("/v-w-c/gateway/ve/work/status", {
         "idWorks": [work_id]
@@ -232,10 +232,12 @@ while True:
 
 ## 推荐阅读
 
-- [API 总览](./00-api-overview.md)：查看公共签名规则、异步任务流程和功能选择入口。
+- [API 总览](./00-api-overview.md)：查看功能选择入口和主要调用流程。
+- [API 凭证与签名](./02-auth-and-sign.md)：查看公共签名规则和常见鉴权错误。
 - [文件上传](./10-file-upload.md)：本地视频需要先上传并获得临时 URL。
-- [字幕 mask 补充说明](./21-inpaint-masks-supplement.md)：查看去字幕模型版本、遮罩框类型和相对坐标规则。
-- [不同功能支持的语言列表](./90-language-support.md)：确认 `videoInpaintLang` 可用值。
+- [字幕 mask 补充说明](./22-inpaint-masks-supplement.md)：查看去字幕模型版本、遮罩框类型和相对坐标规则。
+- [不同功能支持的语言列表](./13-language-support.md)：确认 `videoInpaintLang` 可用值。
 - [视频任务状态查询](./11-work-status-query.md)：查询作品处理状态并读取 `videoUrl`。
-- [视频处理状态枚举](./91-video-process-status.md)：根据 `processStatus` 判断是否成功、继续轮询或失败。
+- [视频处理状态枚举](./14-video-process-status.md)：根据 `processStatus` 判断是否成功、继续轮询或失败。
+- [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：查看 callback 回调格式、验签、重试和幂等规则。
 - 鬼手剪辑 API 域名：`https://api.zhaoli.com`

@@ -298,10 +298,10 @@ POST https://api.zhaoli.com/v-w-c/gateway/ve/series/srt/copy
 
 ## 相关文档
 
-- [译制出海剪辑 API 总览](./40-series-overview.md)：查看完整生命周期。
-- [译制出海项目与视频素材](./49-series-project-and-video-materials.md)：先准备 `idSeries` 和 `idMaterialVideo`。
-- [译制出海通用任务结构](./41-series-edit-common-task-structure.md)：查看 `workDto.idVeMaterialSrt`。
-- [译制出海字幕翻译任务](./51-series-subtitle-translation.md)：翻译字幕会生成新的字幕素材。
+- [译制出海剪辑 API 总览](./51-series-overview.md)：查看完整生命周期。
+- [译制出海项目与视频素材](./60-series-project-and-video-materials.md)：先准备 `idSeries` 和 `idMaterialVideo`。
+- [译制出海通用任务结构](./52-series-edit-common-task-structure.md)：查看 `workDto.idVeMaterialSrt`。
+- [译制出海字幕翻译任务](./62-series-subtitle-translation.md)：翻译字幕会生成新的字幕素材。
 - [GhostCut 本地文件上传 API](./10-file-upload.md)：上传本地 SRT 到译制出海项目。
 
 ## Agent 决策规则

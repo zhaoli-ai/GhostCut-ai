@@ -48,7 +48,7 @@ def main() -> None:
     parser.add_argument("--source", default="api指引", help="Project source api guide directory.")
     parser.add_argument(
         "--target",
-        default="skill/ghostcut-api-guide/references/api-guide",
+        default="skills/ghostcut-api-guide/references/api-guide",
         help="Skill snapshot api-guide directory.",
     )
     parser.add_argument("--check", action="store_true", help="Only check whether source and target differ.")

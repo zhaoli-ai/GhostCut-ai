@@ -42,7 +42,7 @@ gateway/ve/series/edit/task/subtitle/inpaint
 | Pro 框选去字 | `needChineseOcclude=2`、`model=advanced` 或 `advanced_large_box`、`videoInpaintMasks` | 单个字幕区域，追求更高质量。 |
 | Pro 全屏去字 | `needChineseOcclude=1`、`model=advanced_full` | 全屏自动高质量擦除，不需要 `videoInpaintMasks`。 |
 
-框选、坐标和时间字段规则与 [视频去字幕](./20-erase-video-subtitle.md) 和 [字幕 mask 补充说明](./21-inpaint-masks-supplement.md) 完全一致。差异是普通单视频接口中的 `videoInpaintMasks` 和 `extraOptions` 要传 JSON 字符串，而译制出海任务示例中直接传对象或数组。
+框选、坐标和时间字段规则与 [视频去字幕](./21-erase-video-subtitle.md) 和 [字幕 mask 补充说明](./22-inpaint-masks-supplement.md) 完全一致。差异是普通单视频接口中的 `videoInpaintMasks` 和 `extraOptions` 要传 JSON 字符串，而译制出海任务示例中直接传对象或数组。
 
 ## 基础去字请求示例
 
@@ -271,21 +271,23 @@ Pro 去字和 Lite 去字请求结构相同，只把 `workDto.extraOptions.extra
 
 如果字幕擦除结果要继续用于字幕压制或音频分离，后续任务需要在 `workDto.materialWorkIds` 中传入去字后作品 ID。
 
-`materialWorkIds` 用于复用字幕擦除后的作品结果，不是字幕擦除任务 ID，也不是视频素材 ID。应先通过 [任务查询](./42-series-edit-task-list.md) 的 `task/list` 查询字幕擦除任务结果，拿到对应任务的 `body[].id`；这个字段是任务 ID。再按[视频任务状态查询](./11-work-status-query.md)的方式调用 `/work/status` 查询该任务下的作品详情，从响应的 `body.content[].id` 读取作品 ID，并填入后续任务的 `workDto.materialWorkIds`。
+`materialWorkIds` 用于复用字幕擦除后的作品结果，不是字幕擦除任务 ID，也不是视频素材 ID。应先通过 [任务查询](./53-series-edit-task-list.md) 的 `task/list` 查询字幕擦除任务结果，拿到对应任务的 `body[].id`；这个字段是任务 ID。再按[视频任务状态查询](./11-work-status-query.md)的方式调用 `/work/status` 查询该任务下的作品详情，从响应的 `body.content[].id` 读取作品 ID，并填入后续任务的 `workDto.materialWorkIds`。
 
 ## 相关文档
 
-- [译制出海剪辑 API 总览](./40-series-overview.md)：查看模块流程和任务选择规则。
-- [通用任务结构](./41-series-edit-common-task-structure.md)：查看通用字段和 Python 提交通用模板。
-- [字幕压制](./46-series-subtitle-burn.md)：基于去文字后视频压制新字幕。
-- [音频分离](./47-series-audio-separate.md)：基于去文字后视频做音频分离。
-- [任务查询](./42-series-edit-task-list.md)：提交后查询任务状态。
-- [项目与视频素材](./49-series-project-and-video-materials.md)：确认素材已准备完成。
-- [字幕 mask 补充说明](./21-inpaint-masks-supplement.md)：查看与普通单视频一致的框选规则、坐标和模型差异。
+- [译制出海剪辑 API 总览](./51-series-overview.md)：查看模块流程和任务选择规则。
+- [通用任务结构](./52-series-edit-common-task-structure.md)：查看通用字段和 Python 提交通用模板。
+- [字幕压制](./57-series-subtitle-burn.md)：基于去文字后视频压制新字幕。
+- [音频分离](./58-series-audio-separate.md)：基于去文字后视频做音频分离。
+- [任务查询](./53-series-edit-task-list.md)：提交后查询任务状态。
+- [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：查看 callback 回调格式、验签、重试、幂等和补偿轮询规则。
+- [项目与视频素材](./60-series-project-and-video-materials.md)：确认素材已准备完成。
+- [字幕 mask 补充说明](./22-inpaint-masks-supplement.md)：查看与普通单视频一致的框选规则、坐标和模型差异。
 
 ## Agent 决策规则
 
 - 用户只说“去字幕/擦字幕”且没有手动画框时，优先考虑基础去字。
+- 本功能为异步任务；生产接入推荐传入 `callback` 接收结果，轮询作为查询和补偿兜底。
 - 用户给出字幕区域或要求框选时，使用 `needChineseOcclude=2` 和 `videoInpaintMasks`。
 - 擦字幕时，Lite/Pro 框选使用 `remove_only_ocr`；不要用 Lite/Pro 框选擦 logo、贴纸、台标等非文字内容。
 - Lite 模型传 `advanced_lite`，支持 1 到 10 个框；Pro 框选只支持单框，按面积选择 `advanced` 或 `advanced_large_box`。

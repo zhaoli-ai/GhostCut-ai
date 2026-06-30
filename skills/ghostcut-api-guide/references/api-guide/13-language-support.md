@@ -201,7 +201,7 @@
 ## 相关文档
 
 - [API 总览](./00-api-overview.md)：查看功能选择入口和重要参数关系。
-- [视频去字幕](./20-erase-video-subtitle.md)：使用 `videoInpaintLang` 指定要擦除的画面文字语言。
-- [OCR 提取视频字幕](./23-ocr-subtitle-extraction.md)：使用 `videoInpaintLang` 和 `lang` 控制识别与输出语种。
-- [ASR 提取视频字幕](./24-asr-subtitle-extraction.md)：使用 `sourceLang` 指定音频源语言。
+- [视频去字幕](./21-erase-video-subtitle.md)：使用 `videoInpaintLang` 指定要擦除的画面文字语言。
+- [OCR 提取视频字幕](./24-ocr-subtitle-extraction.md)：使用 `videoInpaintLang` 和 `lang` 控制识别与输出语种。
+- [ASR 提取视频字幕](./25-asr-subtitle-extraction.md)：使用 `sourceLang` 指定音频源语言。
 - [视频语音翻译与重新配音](./31-video-voice-translation.md)：使用 `sourceLang` 和 `lang` 指定视频翻译方向。

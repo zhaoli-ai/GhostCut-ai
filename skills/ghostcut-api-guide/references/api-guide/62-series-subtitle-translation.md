@@ -85,7 +85,7 @@ AppSign: generated_app_sign
 | `translation` | 创建翻译任务前可先填同 `source`。 |
 | `character` | `sl[].character`。 |
 
-`slInfo` 的完整解析规则见 [译制出海字幕素材管理](./50-series-subtitle-materials.md)。不要把 `_color`、`_display`、`_mask_top` 等前端编辑字段放进 `sourceSubtitleData[]`。
+`slInfo` 的完整解析规则见 [译制出海字幕素材管理](./61-series-subtitle-materials.md)。不要把 `_color`、`_display`、`_mask_top` 等前端编辑字段放进 `sourceSubtitleData[]`。
 
 如果输入数据中出现 `sourceSubtitleData[].use_for_clone`，组装字幕翻译请求时不要依赖该字段，也不要用它判断后续配音是否为情感克隆模式。情感克隆模式以配音任务中的 `wyTaskType=VOICE_CLONE_PRO` 为准。
 
@@ -239,7 +239,7 @@ POST https://api.zhaoli.com/v-w-c/gateway/ve/translate/subtitle/confirmTask
 
 ## 翻译结果获取
 
-翻译任务成功后会生成新的字幕素材。Agent 应通过 [字幕素材管理](./50-series-subtitle-materials.md) 查询：
+翻译任务成功后会生成新的字幕素材。Agent 应通过 [字幕素材管理](./61-series-subtitle-materials.md) 查询：
 
 ```json
 {
@@ -255,11 +255,11 @@ POST https://api.zhaoli.com/v-w-c/gateway/ve/translate/subtitle/confirmTask
 
 ## 相关文档
 
-- [译制出海剪辑 API 总览](./40-series-overview.md)：查看完整生命周期。
-- [译制出海字幕素材管理](./50-series-subtitle-materials.md)：准备源字幕并获取译后字幕。
-- [译制出海翻译术语库](./52-series-translation-glossary.md)：维护角色名、称谓和专有名词。
-- [译制出海 AI 配音](./45-series-dubbing.md)：使用译后字幕和角色音色发起配音。
-- [译制出海字幕压制](./46-series-subtitle-burn.md)：把译后字幕压制到视频画面。
+- [译制出海剪辑 API 总览](./51-series-overview.md)：查看完整生命周期。
+- [译制出海字幕素材管理](./61-series-subtitle-materials.md)：准备源字幕并获取译后字幕。
+- [译制出海翻译术语库](./63-series-translation-glossary.md)：维护角色名、称谓和专有名词。
+- [译制出海 AI 配音](./56-series-dubbing.md)：使用译后字幕和角色音色发起配音。
+- [译制出海字幕压制](./57-series-subtitle-burn.md)：把译后字幕压制到视频画面。
 
 ## Agent 决策规则
 

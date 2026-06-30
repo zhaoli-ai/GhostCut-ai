@@ -529,9 +529,10 @@ print(deleted_count)
 
 ## 相关文档
 
-- [API 总览](./00-api-overview.md)：查看公共签名规则、异步任务流程和功能选择入口。
-- [视频去字幕](./20-erase-video-subtitle.md)：本地视频上传后可用于擦除字幕、文字、logo 等区域。
-- [为视频压制字幕](./22-burn-subtitles.md)：本地视频或 SRT 上传后可用于字幕压制。
+- [API 总览](./00-api-overview.md)：查看功能选择入口和主要调用流程。
+- [API 凭证与签名](./02-auth-and-sign.md)：查看公共签名规则和常见鉴权错误。
+- [视频去字幕](./21-erase-video-subtitle.md)：本地视频上传后可用于擦除字幕、文字、logo 等区域。
+- [为视频压制字幕](./23-burn-subtitles.md)：本地视频或 SRT 上传后可用于字幕压制。
 - [视频语音翻译与重新配音](./31-video-voice-translation.md)：本地视频上传后可用于翻译并重新配音。
-- [译制出海项目与视频素材](./49-series-project-and-video-materials.md)：上传或导入译制出海项目视频素材。
-- [译制出海字幕素材管理](./50-series-subtitle-materials.md)：上传、创建和查询译制出海字幕素材。
+- [译制出海项目与视频素材](./60-series-project-and-video-materials.md)：上传或导入译制出海项目视频素材。
+- [译制出海字幕素材管理](./61-series-subtitle-materials.md)：上传、创建和查询译制出海字幕素材。

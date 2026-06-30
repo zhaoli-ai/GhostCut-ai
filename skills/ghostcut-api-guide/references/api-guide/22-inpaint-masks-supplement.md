@@ -1,6 +1,6 @@
 # 视频去字幕模型版本与遮罩框坐标补充说明
 
-> 本文是 videoInpaintMasks 和 字幕擦除 类型的补充说明，面向 Agent 使用。鉴权和创建任务以 [视频去字幕](./20-erase-video-subtitle.md) 为准；查询任务状态以[视频任务状态查询](./11-work-status-query.md)为准。本文只说明如何选择擦除版本，以及如何构造 `videoInpaintMasks`。
+> 本文是 videoInpaintMasks 和 字幕擦除 类型的补充说明，面向 Agent 使用。鉴权和创建任务以 [视频去字幕](./21-erase-video-subtitle.md) 为准；查询任务状态以[视频任务状态查询](./11-work-status-query.md)为准。本文只说明如何选择擦除版本，以及如何构造 `videoInpaintMasks`。
 
 ## Agent 快速决策
 
@@ -215,7 +215,7 @@
 ## 相关文档
 
 - [API 总览](./00-api-overview.md)：查看公共调用流程和功能选择入口。
-- [视频去字幕](./20-erase-video-subtitle.md)：创建擦除任务并读取结果视频字段。
+- [视频去字幕](./21-erase-video-subtitle.md)：创建擦除任务并读取结果视频字段。
 - [视频任务状态查询](./11-work-status-query.md)：查询作品处理状态并读取 `videoUrl`。
-- [OCR 提取视频字幕](./23-ocr-subtitle-extraction.md)：OCR 字幕提取也使用 `videoInpaintMasks` 指定识别范围。
-- [不同功能支持的语言列表](./90-language-support.md)：确认 `videoInpaintLang` 在擦除或 OCR 场景下的可用值。
+- [OCR 提取视频字幕](./24-ocr-subtitle-extraction.md)：OCR 字幕提取也使用 `videoInpaintMasks` 指定识别范围。
+- [不同功能支持的语言列表](./13-language-support.md)：确认 `videoInpaintLang` 在擦除或 OCR 场景下的可用值。

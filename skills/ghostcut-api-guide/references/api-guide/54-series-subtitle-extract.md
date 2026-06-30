@@ -29,7 +29,7 @@ gateway/ve/series/edit/task/subtitle/extract
 | 提取模式 | ASR 和 OCR 二选一；ASR 用 `wyTaskType=ONLY_ASR`，OCR 用 `needChineseOcclude=14`。 |
 | 语言 | ASR 传 `sourceLang` 和 `lang`；OCR 传 `videoInpaintLang`，不翻译时 `lang` 与识别语言一致。 |
 | OCR 框选 | OCR 必须传 `videoInpaintMasks[]`，坐标为 `0` 到 `1` 的相对坐标。 |
-| 结果获取 | 提交后先查 [任务查询](./42-series-edit-task-list.md)，任务成功后再查 [字幕素材管理](./50-series-subtitle-materials.md) 获取字幕素材 ID。 |
+| 结果获取 | 生产接入推荐通过 `callback` 接收结果；也可查 [任务查询](./53-series-edit-task-list.md)，任务成功后再查 [字幕素材管理](./61-series-subtitle-materials.md) 获取字幕素材 ID。 |
 
 ## ASR 字幕提取
 
@@ -304,7 +304,7 @@ print(json.dumps(result, ensure_ascii=False, indent=2))
 
 ## OCR 框选规则
 
-译制出海 OCR 的框选规则与 [OCR 提取视频字幕](./23-ocr-subtitle-extraction.md) 和 [字幕 mask 补充说明](./21-inpaint-masks-supplement.md) 中的规则完全一致：使用相对坐标、四点矩形框和可选时间字段。差异是普通单视频接口里的 `videoInpaintMasks` 需要传 JSON 字符串，而译制出海任务示例中直接传数组对象。
+译制出海 OCR 的框选规则与 [OCR 提取视频字幕](./24-ocr-subtitle-extraction.md) 和 [字幕 mask 补充说明](./22-inpaint-masks-supplement.md) 中的规则完全一致：使用相对坐标、四点矩形框和可选时间字段。差异是普通单视频接口里的 `videoInpaintMasks` 需要传 JSON 字符串，而译制出海任务示例中直接传数组对象。
 
 `videoInpaintMasks` 对象结构：
 
@@ -364,7 +364,7 @@ print(json.dumps(result, ensure_ascii=False, indent=2))
 
 ## 查询结果
 
-提交后通过 [任务查询](./42-series-edit-task-list.md) 查看任务状态。任务成功后，通过 [字幕素材管理](./50-series-subtitle-materials.md) 查询产出的字幕素材：
+提交后生产接入推荐通过 `callback` 接收结果；也可通过 [任务查询](./53-series-edit-task-list.md) 查看任务状态。任务成功后，通过 [字幕素材管理](./61-series-subtitle-materials.md) 查询产出的字幕素材：
 
 | 提取方式 | 查询条件 |
 | --- | --- |
@@ -375,15 +375,17 @@ print(json.dumps(result, ensure_ascii=False, indent=2))
 
 ## 相关文档
 
-- [译制出海剪辑 API 总览](./40-series-overview.md)：查看模块流程和任务选择规则。
-- [通用任务结构](./41-series-edit-common-task-structure.md)：查看 `items[]`、`workDto`、`videoEditParamsDto` 和 Python 提交通用模板。
-- [任务查询](./42-series-edit-task-list.md)：提交后查询任务处理进度。
-- [字幕素材管理](./50-series-subtitle-materials.md)：查询 ASR/OCR 产出的字幕素材。
-- [错误与检查清单](./48-series-edit-errors-and-checklist.md)：排查参数缺失或业务校验失败。
+- [译制出海剪辑 API 总览](./51-series-overview.md)：查看模块流程和任务选择规则。
+- [通用任务结构](./52-series-edit-common-task-structure.md)：查看 `items[]`、`workDto`、`videoEditParamsDto` 和 Python 提交通用模板。
+- [任务查询](./53-series-edit-task-list.md)：提交后查询任务处理进度。
+- [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：查看 callback 回调格式、验签、重试、幂等和补偿轮询规则。
+- [字幕素材管理](./61-series-subtitle-materials.md)：查询 ASR/OCR 产出的字幕素材。
+- [错误与检查清单](./59-series-edit-errors-and-checklist.md)：排查参数缺失或业务校验失败。
 
 ## Agent 决策规则
 
 - 用户要从音频人声转写字幕时，用 ASR。
+- 本功能为异步任务；生产接入推荐传入 `callback` 接收结果，轮询作为查询和补偿兜底。
 - 用户要从画面硬字幕识别字幕时，用 OCR。
 - OCR 必须提供 `videoInpaintMasks`。框选坐标、点序、时间字段与普通单视频 OCR 规则完全一致。
 - 不需要翻译时，`lang` 与 `sourceLang` 或 `videoInpaintLang` 保持一致。

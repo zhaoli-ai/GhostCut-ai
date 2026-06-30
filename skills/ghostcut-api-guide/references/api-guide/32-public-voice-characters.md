@@ -300,6 +300,7 @@ for voice in result["body"]:
 
 ## 相关文档
 
-- [API 总览](./00-api-overview.md)：查看公共签名规则和功能选择入口。
+- [API 总览](./00-api-overview.md)：查看功能选择入口。
+- [API 凭证与签名](./02-auth-and-sign.md)：查看公共签名规则和常见鉴权错误。
 - [视频语音翻译与重新配音](./31-video-voice-translation.md)：将查询到的 `id_ve_voice_character` 填入配音参数。
-- [不同功能支持的语言列表](./90-language-support.md)：确认视频翻译目标语言 `lang` 的可用值。
+- [不同功能支持的语言列表](./13-language-support.md)：确认视频翻译目标语言 `lang` 的可用值。

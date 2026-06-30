@@ -124,7 +124,7 @@ print(f"任务创建成功，Work ID: {work_id}")
 | --- | --- | --- | --- |
 | `urls` | `string[]` | 是 | 待处理视频 URL 列表。若视频在本地，应先通过文件上传接口拿到临时 URL。 |
 | `needChineseOcclude` | `number` | 是 | OCR 字幕提取触发器，固定传 `14`。该模式只返回 SRT 文件，不输出视频。 |
-| `videoInpaintLang` | `string` | 是 | 源语言。可用语种见[不同功能支持的语言列表](./90-language-support.md)中的 OCR 提取字幕。 |
+| `videoInpaintLang` | `string` | 是 | 源语言。可用语种见[不同功能支持的语言列表](./13-language-support.md)中的 OCR 提取字幕。 |
 | `lang` | `string` | 是 | 目标语言。如果不需要翻译，传入与 `videoInpaintLang` 完全相同的值。 |
 | `videoInpaintMasks` | `string` | 是 | JSON 字符串，OCR 识别范围框。提取模式下必填。 |
 | `extraOptions` | `string` | 否 | JSON 字符串，OCR 识别调优配置。 |
@@ -157,7 +157,7 @@ OCR 提取模式下，`videoInpaintMasks` 只支持 `remove_only_ocr` 类型：
 | `start` | `number` | 开始时间点，单位秒。不传时默认从 `0` 开始。 |
 | `end` | `number` | 结束时间点，单位秒。不传时默认到视频总时长。 |
 | `to_end` | `number` | 可选，用于跳过片尾，例如 `10` 表示跳过最后 10 秒。`end` 和 `to_end` 只能二选一。 |
-| `region` | `number[][]` | OCR 识别范围，相对坐标点列表。坐标规则参考[字幕 mask 补充说明](./21-inpaint-masks-supplement.md)。 |
+| `region` | `number[][]` | OCR 识别范围，相对坐标点列表。坐标规则参考[字幕 mask 补充说明](./22-inpaint-masks-supplement.md)。 |
 
 #### `extraOptions` 识别调优配置
 
@@ -183,21 +183,24 @@ OCR 提取模式下，`videoInpaintMasks` 只支持 `remove_only_ocr` 类型：
 
 ### 3. 查询任务状态
 
-创建任务拿到 `work_id` 后，按[视频任务状态查询](./11-work-status-query.md)调用 `/v-w-c/gateway/ve/work/status`。本功能在 `processStatus == 1` 时读取 `srcSrtUrl` / `tgtSrtUrl`；如果 `processStatus > 1`，按[视频处理状态枚举](./91-video-process-status.md)排查失败原因。
+创建任务拿到 `work_id` 后，按[视频任务状态查询](./11-work-status-query.md)调用 `/v-w-c/gateway/ve/work/status`。本功能在 `processStatus == 1` 时读取 `srcSrtUrl` / `tgtSrtUrl`；如果 `processStatus > 1`，按[视频处理状态枚举](./14-video-process-status.md)排查失败原因。生产接入推荐使用 `callback` 接收结果，轮询作为查询和补偿兜底，规则见[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。
 
 ## Agent 决策规则
 
 - 用户要从视频画面里的硬字幕提取 SRT 时，优先使用 OCR 字幕提取。
-- 用户要根据音频中的人声转写字幕时，使用 [ASR 提取视频字幕](./24-asr-subtitle-extraction.md)。
+- 用户要根据音频中的人声转写字幕时，使用 [ASR 提取视频字幕](./25-asr-subtitle-extraction.md)。
+- 本功能为异步任务；生产接入推荐使用 `callback` 接收结果，轮询作为查询和补偿兜底。
 - OCR 提取必须传 `videoInpaintMasks`，且框类型必须是 `remove_only_ocr`。
 - 如果用户不需要翻译，`lang` 必须与 `videoInpaintLang` 保持一致。
 - OCR 字幕提取只产出 SRT 文件，不产出处理后视频；查询结果时读取 `srcSrtUrl` / `tgtSrtUrl`，不要等待 `videoUrl`。
 
 ## 相关文档
 
-- [API 总览](./00-api-overview.md)：查看公共签名规则、异步任务流程和功能选择入口。
+- [API 总览](./00-api-overview.md)：查看功能选择入口和主要调用流程。
+- [API 凭证与签名](./02-auth-and-sign.md)：查看公共签名规则和常见鉴权错误。
 - [文件上传](./10-file-upload.md)：本地视频需要先上传并获得临时 URL。
-- [字幕 mask 补充说明](./21-inpaint-masks-supplement.md)：查看 `videoInpaintMasks` 坐标、时间字段和框类型。
-- [不同功能支持的语言列表](./90-language-support.md)：确认 `videoInpaintLang` 和 `lang` 的可用值。
+- [字幕 mask 补充说明](./22-inpaint-masks-supplement.md)：查看 `videoInpaintMasks` 坐标、时间字段和框类型。
+- [不同功能支持的语言列表](./13-language-support.md)：确认 `videoInpaintLang` 和 `lang` 的可用值。
 - [视频任务状态查询](./11-work-status-query.md)：查询作品处理状态并读取 `srcSrtUrl` / `tgtSrtUrl`。
-- [视频处理状态枚举](./91-video-process-status.md)：根据 `processStatus` 判断是否成功、继续轮询或失败。
+- [视频处理状态枚举](./14-video-process-status.md)：根据 `processStatus` 判断是否成功、继续轮询或失败。
+- [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：查看 callback 回调格式、验签、重试和幂等规则。

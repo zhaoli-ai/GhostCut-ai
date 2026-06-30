@@ -163,13 +163,13 @@ POST https://api.zhaoli.com/v-w-c/gateway/ve/translate/queryListTranslateGlossar
 
 - 翻译前可先写入角色名、称谓和专有名词。
 - `auto_translate_on=false` 时，翻译任务会进入 `stage=3`（等待词表编辑），需要人工审核术语库后再推进。
-- 审核完成后，通过 [字幕翻译任务](./51-series-subtitle-translation.md) 的 `confirmTask` 接口传 `stage=4`。
+- 审核完成后，通过 [字幕翻译任务](./62-series-subtitle-translation.md) 的 `confirmTask` 接口传 `stage=4`。
 
 ## 相关文档
 
-- [译制出海字幕翻译任务](./51-series-subtitle-translation.md)：创建、查询、推进或重试翻译任务。
-- [译制出海字幕素材管理](./50-series-subtitle-materials.md)：查询源字幕和译后字幕素材。
-- [译制出海剪辑 API 总览](./40-series-overview.md)：查看完整生命周期。
+- [译制出海字幕翻译任务](./62-series-subtitle-translation.md)：创建、查询、推进或重试翻译任务。
+- [译制出海字幕素材管理](./61-series-subtitle-materials.md)：查询源字幕和译后字幕素材。
+- [译制出海剪辑 API 总览](./51-series-overview.md)：查看完整生命周期。
 
 ## Agent 决策规则
 
