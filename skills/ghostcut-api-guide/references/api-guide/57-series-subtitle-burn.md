@@ -226,7 +226,7 @@ print(json.dumps(result, ensure_ascii=False, indent=2))
 
 ## 字幕样式参数
 
-译制出海字幕压制里的 `wyVoiceParam.font_param`，与普通单视频文档 [字幕样式和字体配置补充](./26-subtitle-style-and-fonts.md) 使用同一套规则。没有特殊样式要求时，可以直接复用 `25` 中推荐的默认组合。
+译制出海字幕压制里的 `wyVoiceParam.font_param`，与普通单视频文档 [字幕样式和字体配置补充](./26-subtitle-style-and-fonts.md) 使用同一套规则。没有特殊样式要求时，可以直接复用该文档中推荐的默认组合。
 
 ### V1.0 简化写法
 

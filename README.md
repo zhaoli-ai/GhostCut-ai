@@ -40,6 +40,12 @@ skills/
 请访问 https://raw.githubusercontent.com/zhaoli-ai/GhostCut-ai/main/skills.md 并按说明为我安装 GhostCut AI Skills。
 ```
 
+如果当前网络无法访问 `raw.githubusercontent.com`，也可以打开 GitHub 页面阅读同一份说明：
+
+```text
+https://github.com/zhaoli-ai/GhostCut-ai/blob/main/skills.md
+```
+
 ### 使用 npx skills 安装
 
 如果本地已经安装 Node.js，可以直接用 `npx skills` 从 GitHub 安装：
