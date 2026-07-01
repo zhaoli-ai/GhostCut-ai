@@ -1,7 +1,11 @@
 ---
 name: ghostcut-api-guide
+slug: ghostcut-ai-skill
+displayName: GhostCut鬼手剪辑-助力短剧ai剧视频出海
+version: 1.0.4
+summary: GhostCut API 指引 Skill 面向视频译制、内容出海和多媒体本地化场景，帮助 AI Agent 调用 GhostCut 完成字幕提取、字幕擦除、翻译配音、背景音乐处理、批量合成与字幕压制等流程。同时覆盖图片翻译、图片文字擦除等图像处理能力。Powered by GhostCut.
 license: MIT
-description: 安装后的 Agent 运行说明，包含 GhostCut API 文档地图、功能路由、参数强规则、脚本入口和维护规则；具体接口能力以 references/api-guide/llms.txt 为准。
+description: GhostCut API 使用指引 / API usage guide for agents. 用于选择 GhostCut API 调用流程、组装或校验请求体、解释参数、编写 Python 示例、查询任务状态、处理异步轮询与 callback 回调，以及处理本地文件上传、字幕擦除 subtitle erasure、字幕压制 subtitle burning、OCR/ASR 字幕提取、背景音乐分离、视频翻译配音 video voice translation/dubbing、公共音色 public voices、AI 图片处理 image text erasure/translation/Image Redo、语言支持、处理状态和“译制出海” Series Editing 模块。
 ---
 
 # GhostCut API 指引
