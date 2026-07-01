@@ -1,6 +1,6 @@
 # GhostCut API 指引参考
 
-详细源文档位于 `api-guide/`。当主项目的 `api指引/` 更新后，应同步该目录，避免 skill 使用过期快照。
+详细文档位于 `api-guide/`。当前 skill 直接随附并维护该快照；如另有外部源文档目录，需要显式指定 `--source` 后再用同步脚本对比或导入。
 
 ## 入口文档
 
@@ -9,7 +9,7 @@
 - `api-guide/01-quickstart.md`：新用户 5 分钟快速上手，使用示例 payload 跑通视频去文字任务。
 - `sample-assets.md`：用户没有可用视频或图片时的演示素材 URL 和使用限制。
 
-## 最小示例
+最小示例文件：
 
 - `../examples/.env.example`：`AppKey` 和 `AppSecret` 环境变量模板。
 - `../examples/video-inpaint-advanced-lite-fullscreen.payload.json`：视频去文字高擦 Lite、全屏框选任务请求体。
@@ -22,6 +22,7 @@
 - `api-guide/03-media-requirements.md`：素材 URL、视频格式、图片格式、本地上传和批量数量要求。
 - `api-guide/10-file-upload.md`：上传本地文件。
 - `api-guide/11-work-status-query.md`：查询 `/work/status`。
+- `api-guide/12-point-balance-query.md`：查询当前 `AppKey` 对应商户的有效点卡余额。
 - `api-guide/13-language-support.md`：语言支持。
 - `api-guide/14-video-process-status.md`：处理状态和错误码。
 - `api-guide/15-async-and-callbacks.md`：异步任务、轮询、回调、验签、重试和幂等规则。
@@ -69,5 +70,5 @@
 
 脚本：
 
-- `../scripts/ghostcut_api.py`：签名、发送请求、上传文件、查询 `/work/status` 和查询译制出海 `task/list`。
-- `../scripts/sync_api_guide.py`：检查或同步 `api指引/` 到 skill 快照。
+- `../scripts/ghostcut_api.py`：签名、发送请求、上传文件、查询 `/work/status`、查询点卡余额和查询译制出海 `task/list`。
+- `../scripts/sync_api_guide.py`：检查当前 skill 快照；如另有外部源文档目录，可显式传 `--source /path/to/api-guide` 做对比或同步。

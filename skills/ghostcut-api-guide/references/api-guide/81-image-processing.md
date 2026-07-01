@@ -1,7 +1,3 @@
-> ## 文档索引
-> 可通过 [llms.txt](./llms.txt) 获取完整文档索引。
-> 在继续查阅前，建议先通过该文件了解所有可用页面。
-
 # AI 图片处理
 
 > 鬼手剪辑 API 可对图片进行文字识别与擦除、图像多语言文字翻译，并支持对翻译结果进行二次编辑与重新合成。图片处理接口均为异步任务。
@@ -11,7 +7,7 @@
 一次完整的图片处理流程包含以下步骤：
 
 1. **准备图片资源**
-   如果图片已经可以通过公网 URL 访问，可直接使用该 URL。如果只有本地图片文件，先调用[文件上传 API](./10-file-upload.md)上传图片，获取临时 URL。
+   图片 URL、格式、尺寸、大小和本地上传要求见[素材 URL 与格式要求](./03-media-requirements.md)；本地图片先按[文件上传](./10-file-upload.md)获取临时 URL。
 
 2. **创建图片处理任务**
    调用 `/v-w-c/gateway/ve/image/translate`，传入图片 URL、源语言、目标语言和处理参数。接口返回成功后，从 `body` 中获取图片任务 ID。
@@ -25,32 +21,13 @@
 5. **可选：二次微调**
    如果需要调整译文、颜色、字号或排版，可选择生成授权码唤起官方 Web 精修编辑器，或通过 `/v-w-c/gateway/ve/image/translate/redo` 提交修改后的 `result` 重新合成。
 
-## 图片限制
+## 图片要求
 
-| 限制项 | 说明 |
-| --- | --- |
-| 图片尺寸 | 不超过 `2000 * 2000 px` |
-| 文件大小 | 不超过 `50MB` |
-| URL | 地址中不能包含中文字符 |
-| 格式 | 支持 `png`、`jpeg`、`jpg`、`bmp`、`webp` |
+提交图片处理任务前，先按[素材 URL 与格式要求](./03-media-requirements.md)检查图片格式、尺寸、文件大小、URL 字符和本地上传约束。
 
 ## 认证
 
-鬼手剪辑 API 使用 `AppKey` + `AppSign` 进行鉴权。`AppSign` 的生成规则为双重 MD5：
-
-1. 将请求参数序列化为 JSON 字符串。
-2. 对 JSON 字符串做一次 MD5，得到 `body_md5hex`。
-3. 将 `body_md5hex + AppSecret` 拼接后再次做 MD5，得到最终的 `AppSign`。
-
-请求头需要包含：
-
-```http
-Content-Type: application/json
-AppKey: your_app_key
-AppSign: generated_app_sign
-```
-
-> 注意：用于签名的 JSON 字符串需要和实际发送的请求体保持一致，否则签名会校验失败。
+本接口使用 `AppKey` + `AppSign` 鉴权；规则见[API 凭证与签名](./02-auth-and-sign.md)。
 
 ## 调用示例
 
@@ -229,8 +206,8 @@ while True:
         print(f"处理失败: {body.get('taskStatusEnum')}")
         break
 
-    print("处理中，等待 30 秒后重试...")
-    time.sleep(30)
+    print("处理中，等待 300 秒后重试...")
+    time.sleep(300)
 ```
 
 ## 仅擦除图片文字

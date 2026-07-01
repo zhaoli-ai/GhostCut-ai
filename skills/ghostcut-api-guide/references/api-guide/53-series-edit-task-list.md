@@ -1,7 +1,3 @@
-> ## 文档索引
-> 可通过 [llms.txt](./llms.txt) 获取完整文档索引。
-> 在继续查阅前，建议先通过该文件了解所有可用页面。
-
 # 译制出海任务查询
 
 > 提交译制出海任务后，生产接入推荐优先通过 `callback` 接收最终结果；本接口用于查询任务列表、处理进度和补偿兜底。若需要进一步查询作品详情、作品 ID 或播放地址，应先从本接口拿到任务 ID，再调用 `/v-w-c/gateway/ve/work/status`。后续任务需要 `materialWorkIds` 时，使用 `/work/status` 返回的 `body.content[].id`。
@@ -158,7 +154,7 @@ gateway/ve/series/edit/task/list
 
 | 判断 | 含义 | 建议 |
 | --- | --- | --- |
-| `processingWorkCount > 0` | 仍有视频处理中 | 等待 `callback`，或继续轮询 `task/list`；补偿轮询的初始间隔建议 300 秒。 |
+| `processingWorkCount > 0` | 仍有视频处理中 | 等待 `callback`，或按[异步任务、轮询和回调机制](./15-async-and-callbacks.md)继续轮询 `task/list`。 |
 | `errorWorkCount > 0` | 有视频失败 | 记录 `trace` 和任务信息，结合 [错误与检查清单](./59-series-edit-errors-and-checklist.md) 排查。 |
 | `successWorkCount > 0` 且 `processingWorkCount == 0` 且 `errorWorkCount == 0` | 当前任务内视频均成功 | 进入后续任务或读取结果。 |
 

@@ -1,7 +1,3 @@
-> ## 文档索引
-> 可通过 [llms.txt](./llms.txt) 获取完整文档索引。
-> 在继续查阅前，建议先通过该文件了解所有可用页面。
-
 # 5 分钟快速上手
 
 > 本文面向新安装 `ghostcut-api-guide` skill 的用户，目标是先跑通一个最小闭环：获取凭证、生成签名、创建视频去文字任务、查询任务结果。
@@ -130,7 +126,7 @@ python scripts/ghostcut_api.py post --path /v-w-c/gateway/ve/work/status --paylo
 | 状态 | 含义 | 下一步 |
 | --- | --- | --- |
 | `processStatus == 1` | 处理成功 | 读取 `videoUrl` 下载结果视频。 |
-| `processStatus < 1` | 处理中 | 等待后继续查询；补偿轮询初始间隔建议 300 秒。 |
+| `processStatus < 1` | 处理中 | 等待后继续查询；生产接入的补偿轮询规则见[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。 |
 | `processStatus > 1` | 处理失败 | 查看 `errorDetail`，并参考[视频处理状态枚举](./14-video-process-status.md)。 |
 
 ## 下一步

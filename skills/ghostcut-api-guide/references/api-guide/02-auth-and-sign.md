@@ -1,7 +1,3 @@
-> ## 文档索引
-> 可通过 [llms.txt](./llms.txt) 获取完整文档索引。
-> 在继续查阅前，建议先通过该文件了解所有可用页面。
-
 # API 凭证与签名
 
 > 本文说明 GhostCut API 的 `AppKey`、`AppSecret` 获取方式、请求签名规则和本地脚本使用方式。除 OSS 文件上传请求本身外，GhostCut 业务接口通常都需要 `AppKey` + `AppSign` 鉴权。

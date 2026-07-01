@@ -26,6 +26,7 @@ export GHOSTCUT_APP_SECRET="your_app_secret"
 python scripts/ghostcut_api.py sign --payload examples/video-inpaint-advanced-lite-fullscreen.payload.json
 python scripts/ghostcut_api.py post --path /v-w-c/gateway/ve/work/free --payload examples/video-inpaint-advanced-lite-fullscreen.payload.json
 python scripts/ghostcut_api.py work-status 521461135
+python scripts/ghostcut_api.py point-balance
 ```
 
 说明：

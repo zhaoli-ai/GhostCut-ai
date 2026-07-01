@@ -1,7 +1,3 @@
-> ## 文档索引
-> 可通过 [llms.txt](./llms.txt) 获取完整文档索引。
-> 在继续查阅前，建议先通过该文件了解所有可用页面。
-
 # 视频处理状态枚举
 
 > 本文档整理 GhostCut 视频处理结果 `processStatus` 的枚举值、公共错误码和排查建议。普通单视频任务的 `/v-w-c/gateway/ve/work/status` 查询方法见[视频任务状态查询](./11-work-status-query.md)。
@@ -76,7 +72,7 @@ status = content["processStatus"]
 | 判断 | 含义 | 建议 |
 | --- | --- | --- |
 | `processStatus == 1` | 任务成功 | 读取 `videoUrl`、`srcSrtUrl`、`tgtSrtUrl` 等结果字段，具体字段取决于功能。 |
-| `processStatus < 1` | 任务尚未最终完成 | 继续等待并轮询。初始轮询间隔建议 300 秒，不要高频请求；生产接入优先推荐 `callback`。 |
+| `processStatus < 1` | 任务尚未最终完成 | 继续等待并轮询；具体轮询策略见[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。生产接入优先推荐 `callback`。 |
 | `processStatus > 1` | 任务失败或资源异常 | 按下方状态表排查；可自查的问题修复后重新提交，平台或算法问题联系 GhostCut。 |
 
 ## 视频处理状态表

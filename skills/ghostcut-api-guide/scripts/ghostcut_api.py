@@ -100,7 +100,7 @@ def infer_material_file_type(local_file_path: Path) -> str:
     suffix = local_file_path.suffix.lower()
     if suffix == ".srt":
         return "srt"
-    if suffix in {".mp4", ".mov", ".m4v", ".avi", ".mkv", ".webm"}:
+    if suffix in {".mp4", ".mov", ".m4v", ".avi", ".mkv", ".mpg", ".m3u8", ".webm"}:
         return "video"
     if suffix in {".png", ".jpg", ".jpeg", ".webp", ".gif"}:
         return "image"
@@ -244,6 +244,34 @@ def command_work_status(args: argparse.Namespace) -> None:
     print(json.dumps({"summary": summary, "raw": data}, ensure_ascii=False, indent=2))
 
 
+def command_point_balance(args: argparse.Namespace) -> None:
+    app_key, app_secret = get_credentials(args)
+    data = api_post(
+        path="/v-w-c/gateway/ve/point/query",
+        payload={"notZero": True, "isValid": True},
+        app_key=app_key,
+        app_secret=app_secret,
+        base_url=args.base_url,
+        timeout=args.timeout,
+    )
+    assets = data.get("body", {}).get("pointAssets", [])
+    total_balance = sum(float(asset.get("pointBalance") or 0) for asset in assets)
+    print(
+        json.dumps(
+            {
+                "summary": {
+                    "totalPointBalance": total_balance,
+                    "assetCount": len(assets),
+                },
+                "assets": assets,
+                "raw": data,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
+
+
 def command_task_list(args: argparse.Namespace) -> None:
     app_key, app_secret = get_credentials(args)
     payload = load_payload(args.payload)
@@ -303,6 +331,9 @@ def build_parser() -> argparse.ArgumentParser:
     work_status = subparsers.add_parser("work-status", help="Query /v-w-c/gateway/ve/work/status.")
     work_status.add_argument("ids", nargs="+", help="Work IDs, or Series task/project IDs when following Series docs.")
     work_status.set_defaults(func=command_work_status)
+
+    point_balance = subparsers.add_parser("point-balance", help="Query current AppKey point card balance.")
+    point_balance.set_defaults(func=command_point_balance)
 
     task_list = subparsers.add_parser("task-list", help="Query Series Editing task/list.")
     task_list.add_argument("--payload", help="Optional JSON string or path to a JSON file.")

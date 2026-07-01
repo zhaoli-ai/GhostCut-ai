@@ -1,7 +1,3 @@
-> ## 文档索引
-> 可通过 [llms.txt](./llms.txt) 获取完整文档索引。
-> 在继续查阅前，建议先通过该文件了解所有可用页面。
-
 # 字幕样式和字体配置补充
 
 > 本文档说明 GhostCut 字幕样式配置方式，主要用于[为视频压制字幕](./23-burn-subtitles.md)和[视频语音翻译与重新配音](./31-video-voice-translation.md)中的新字幕渲染。字幕样式统一通过 `wyVoiceParam` JSON 字符串下的 `font_param` 节点控制。

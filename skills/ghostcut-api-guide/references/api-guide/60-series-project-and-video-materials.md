@@ -1,7 +1,3 @@
-> ## 文档索引
-> 可通过 [llms.txt](./llms.txt) 获取完整文档索引。
-> 在继续查阅前，建议先通过该文件了解所有可用页面。
-
 # 译制出海项目与视频素材
 
 > 本文补充译制出海任务提交前的准备环节：创建或查询项目，获得 `idSeries`；上传、导入、查询和替换视频素材，获得可用于 `items[].idMaterialVideo` 的素材 ID。
@@ -212,7 +208,7 @@ POST https://api.zhaoli.com/v-w-c/gateway/ve/series/video/import
 | `processStatus=1` | 预处理完成，可用。 |
 | `processStatus>1` | 预处理失败。 |
 
-如果没有传 `callback`，应通过素材列表接口轮询。补偿轮询的初始间隔建议 300 秒，完整规则见[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。
+如果没有传 `callback`，应通过素材列表接口轮询。补偿轮询规则见[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。
 
 ### 查询项目内视频素材列表
 

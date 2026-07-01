@@ -1,7 +1,3 @@
-> ## 文档索引
-> 可通过 [llms.txt](./llms.txt) 获取完整文档索引。
-> 在继续查阅前，建议先通过该文件了解所有可用页面。
-
 # GhostCut API 总览
 
 > 本文是 GhostCut API 文档的入口页，用于帮助人或 Agent 判断应该调用哪个功能、先阅读哪个文档，以及哪些公共规则需要在所有功能中复用。具体参数、请求示例和响应字段以各功能文档为准。
@@ -25,6 +21,7 @@
 | --- | --- | --- |
 | 本地视频、本地 SRT 或本地图片需要先传给 GhostCut | [文件上传](./10-file-upload.md) | 后续再进入具体功能文档 |
 | 查询普通单视频任务是否完成、读取结果 URL | [视频任务状态查询](./11-work-status-query.md) | [视频处理状态枚举](./14-video-process-status.md) |
+| 查询账户余额、点卡余额、可用点数或商户剩余点数 | [点卡余额查询](./12-point-balance-query.md) | [API 凭证与签名](./02-auth-and-sign.md) |
 | 了解异步任务、轮询策略、callback 回调、回调验签、重试和幂等 | [异步任务、轮询和回调机制](./15-async-and-callbacks.md) | [视频任务状态查询](./11-work-status-query.md)、[AI 图片处理](./81-image-processing.md) |
 | 基础剪辑、截取视频片段、调整分辨率、调色锐化、滤镜、镜像、缩放或画面移动 | [视频基础处理](./27-video-basic-processing.md) | [文件上传](./10-file-upload.md)、[视频任务状态查询](./11-work-status-query.md) |
 | 去掉视频中的字幕、文字、角标、logo 或固定区域 | [视频去字幕](./21-erase-video-subtitle.md) | [字幕 mask 补充说明](./22-inpaint-masks-supplement.md)、[视频任务状态查询](./11-work-status-query.md) |
@@ -53,6 +50,7 @@
 | 确认视频、图片、SRT 的 URL 与格式要求 | [素材 URL 与格式要求](./03-media-requirements.md) |
 | 上传本地视频、图片或 SRT | [文件上传](./10-file-upload.md) |
 | 查询普通视频处理任务结果 | [视频任务状态查询](./11-work-status-query.md) |
+| 查询当前 `AppKey` 对应商户的点卡余额 | [点卡余额查询](./12-point-balance-query.md) |
 | 理解异步任务、callback、轮询和回调验签 | [异步任务、轮询和回调机制](./15-async-and-callbacks.md) |
 
 ## 主要调用流程
@@ -74,6 +72,7 @@
 | --- | --- | --- |
 | `POST /v-w-c/gateway/ve/work/free` | 创建视频处理任务，如擦除、字幕压制、OCR/ASR、背景音乐分离、视频语音翻译 | 各功能文档 |
 | `POST /v-w-c/gateway/ve/work/status` | 查询普通单视频处理任务状态和结果 URL | [视频任务状态查询](./11-work-status-query.md) |
+| `POST /v-w-c/gateway/ve/point/query` | 查询当前 `AppKey` 对应商户的点卡余额 | [点卡余额查询](./12-point-balance-query.md) |
 | `POST /v-w-c/gateway/ve/file/upload/policy/apply` | 获取本地文件上传凭证 | [文件上传](./10-file-upload.md) |
 | `POST /v-w-c/gateway/ve/image/translate` | 创建图片文字擦除或图片翻译任务 | [AI 图片处理](./81-image-processing.md) |
 | `POST /v-w-c/gateway/ve/image/translate/query` | 查询图片处理任务状态和结果 URL | [AI 图片处理](./81-image-processing.md) |
@@ -95,6 +94,7 @@
 | `videoUrl` / `urls` | 待处理视频、图片或素材 URL | 具体功能文档、[文件上传](./10-file-upload.md) |
 | `downloadInfo` | 图片处理任务中的图片 URL JSON 字符串 | [AI 图片处理](./81-image-processing.md)、[文件上传](./10-file-upload.md) |
 | `idWorks` | 查询普通单视频任务状态时使用的作品 ID 列表 | [视频任务状态查询](./11-work-status-query.md) |
+| `pointAssets[].pointBalance` | 当前商户有效点卡资产的剩余点数 | [点卡余额查询](./12-point-balance-query.md) |
 | `processStatus` | 视频处理状态 | [视频处理状态枚举](./14-video-process-status.md) |
 | `status` | 图片处理状态 | [AI 图片处理](./81-image-processing.md) |
 | `callback` | 异步任务完成后的回调 URL | [异步任务、轮询和回调机制](./15-async-and-callbacks.md) |
@@ -121,7 +121,8 @@
 - 用户给的是本地文件路径，而目标功能需要 URL 时，先调用[文件上传](./10-file-upload.md)。
 - 创建普通视频处理任务前，先按[素材 URL 与格式要求](./03-media-requirements.md)检查视频格式、URL 字符和批量数量约束。
 - 用户问 API Key、`AppKey`、`AppSecret`、凭证在哪里获取或如何鉴权时，先读[API 凭证与签名](./02-auth-and-sign.md)。
-- 用户提到异步任务、轮询策略、callback 回调、`Callback-Sign`、回调重试或幂等时，先查[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。生产接入优先推荐 `callback`，轮询作为查询和补偿兜底，初始轮询间隔建议 300 秒。
+- 用户问账户余额、点卡余额、可用点数、剩余点数或商户余额时，先读[点卡余额查询](./12-point-balance-query.md)。
+- 用户提到异步任务、轮询策略、callback 回调、`Callback-Sign`、回调重试或幂等时，先查[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。生产接入优先推荐 `callback`，轮询作为查询和补偿兜底。
 - 创建普通单视频处理任务后，不要把 `code=1000` 当作最终成功；必须按[视频任务状态查询](./11-work-status-query.md)继续查询 `processStatus`。
 - 涉及基础剪辑、分辨率、截取、调色、锐化、片头片尾裁剪、加速、滤镜、镜像、缩放或画面移动时，先查[视频基础处理](./27-video-basic-processing.md)。
 - 涉及语言代码时，先查[不同功能支持的语言列表](./13-language-support.md)，不要凭常识猜测。

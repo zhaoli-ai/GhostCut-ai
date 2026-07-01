@@ -1,7 +1,3 @@
-> ## 文档索引
-> 可通过 [llms.txt](./llms.txt) 获取完整文档索引。
-> 在继续查阅前，建议先通过该文件了解所有可用页面。
-
 # 背景音乐去除/分离
 
 > 鬼手剪辑 API 可用于精准提取并去除原视频背景音中的音乐旋律部分，同时保留视频中的人声和其他环境效果音。
@@ -11,7 +7,7 @@
 一次完整的背景音乐去除/分离流程包含以下步骤：
 
 1. **准备视频资源**
-   如果视频已经可以通过公网 URL 访问，可直接使用该 URL。如果只有本地视频文件，先调用[文件上传 API](./10-file-upload.md)上传视频，获取临时 URL。
+   视频 URL、格式和本地上传要求见[素材 URL 与格式要求](./03-media-requirements.md)；本地视频先按[文件上传](./10-file-upload.md)获取临时 URL。
 
 2. **创建背景音乐去除/分离任务**
    调用 `/v-w-c/gateway/ve/work/free`，传入待处理视频 URL 以及音频处理参数。接口返回成功后，从 `body.dataList[0].id` 中获取作品 ID。
@@ -24,21 +20,7 @@
 
 ## 认证
 
-鬼手剪辑 API 使用 `AppKey` + `AppSign` 进行鉴权。`AppSign` 的生成规则为双重 MD5：
-
-1. 将请求参数序列化为 JSON 字符串。
-2. 对 JSON 字符串做一次 MD5，得到 `body_md5hex`。
-3. 将 `body_md5hex + AppSecret` 拼接后再次做 MD5，得到最终的 `AppSign`。
-
-请求头需要包含：
-
-```http
-Content-Type: application/json
-AppKey: your_app_key
-AppSign: generated_app_sign
-```
-
-> 注意：用于签名的 JSON 字符串需要和实际发送的请求体保持一致，否则签名会校验失败。
+本接口使用 `AppKey` + `AppSign` 鉴权；规则见[API 凭证与签名](./02-auth-and-sign.md)。
 
 ## 调用示例
 

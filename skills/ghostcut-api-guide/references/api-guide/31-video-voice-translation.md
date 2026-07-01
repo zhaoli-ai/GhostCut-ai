@@ -1,7 +1,3 @@
-> ## 文档索引
-> 可通过 [llms.txt](./llms.txt) 获取完整文档索引。
-> 在继续查阅前，建议先通过该文件了解所有可用页面。
-
 # 视频语音翻译与重新配音
 
 > 鬼手剪辑 API 可对视频进行翻译并重新配音，支持 ASR 自动识别或外挂 SRT 字幕，并支持音画自动重新对齐。
@@ -11,7 +7,7 @@
 一次完整的视频语音翻译流程包含以下步骤：
 
 1. **准备视频资源**
-   如果视频已经可以通过公网 URL 访问，可直接使用该 URL。如果只有本地视频文件，先调用[文件上传 API](./10-file-upload.md)上传视频，获取临时 URL。
+   视频 URL、格式和本地上传要求见[素材 URL 与格式要求](./03-media-requirements.md)；本地视频先按[文件上传](./10-file-upload.md)获取临时 URL。
 
 2. **准备配音音色**
    经典模式需要在 `wyVoiceParam.character_voices` 中配置目标语种音色，并使用 `wyTaskType=FULL`。公共声音可通过[公共音色查询接口](./32-public-voice-characters.md)获取音色角色 ID，并填入 `id_ve_voice_character`。情感克隆模式通过 `wyTaskType=VOICE_CLONE_PRO` 开启，不需要手动为角色选择音色。
@@ -27,21 +23,7 @@
 
 ## 认证
 
-鬼手剪辑 API 使用 `AppKey` + `AppSign` 进行鉴权。`AppSign` 的生成规则为双重 MD5：
-
-1. 将请求参数序列化为 JSON 字符串。
-2. 对 JSON 字符串做一次 MD5，得到 `body_md5hex`。
-3. 将 `body_md5hex + AppSecret` 拼接后再次做 MD5，得到最终的 `AppSign`。
-
-请求头需要包含：
-
-```http
-Content-Type: application/json
-AppKey: your_app_key
-AppSign: generated_app_sign
-```
-
-> 注意：用于签名的 JSON 字符串需要和实际发送的请求体保持一致，否则签名会校验失败。
+本接口使用 `AppKey` + `AppSign` 鉴权；规则见[API 凭证与签名](./02-auth-and-sign.md)。
 
 ## 调用示例
 

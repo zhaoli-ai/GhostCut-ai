@@ -1,7 +1,3 @@
-> ## 文档索引
-> 可通过 [llms.txt](./llms.txt) 获取完整文档索引。
-> 在继续查阅前，建议先通过该文件了解所有可用页面。
-
 # 译制出海通用任务结构
 
 > 译制出海的字幕提取、字幕擦除、AI 配音、字幕压制和音频分离共用同一套任务请求结构。具体任务差异只体现在 `videoEditParamsDto`、`workDto.extraOptions` 和 `wyVoiceParam` 的取值。

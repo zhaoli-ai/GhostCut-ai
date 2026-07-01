@@ -1,7 +1,3 @@
-> ## 文档索引
-> 可通过 [llms.txt](./llms.txt) 获取完整文档索引。
-> 在继续查阅前，建议先通过该文件了解所有可用页面。
-
 # 公共音色查询接口
 
 > 本文档说明 GhostCut 公共音色角色查询接口。经典模式的视频语音翻译与重新配音需要从该接口获取音色 ID，并填入 `wyVoiceParam.character_voices[].id_ve_voice_character`。无论 `voice_type=TTS` 还是 `voice_type=CLONE`，都统一使用 `id_ve_voice_character` 传参。
@@ -39,13 +35,7 @@ AppSign: generated_app_sign
 
 ## 认证
 
-鬼手剪辑 API 使用 `AppKey` + `AppSign` 进行鉴权。`AppSign` 的生成规则为双重 MD5：
-
-1. 将请求参数序列化为 JSON 字符串。
-2. 对 JSON 字符串做一次 MD5，得到 `body_md5hex`。
-3. 将 `body_md5hex + AppSecret` 拼接后再次做 MD5，得到最终的 `AppSign`。
-
-> 注意：用于签名的 JSON 字符串需要和实际发送的请求体保持一致，否则签名会校验失败。
+本接口使用 `AppKey` + `AppSign` 鉴权；规则见[API 凭证与签名](./02-auth-and-sign.md)。
 
 ## 通用返回结构
 

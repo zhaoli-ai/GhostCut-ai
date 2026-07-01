@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
-"""Synchronize the skill's api-guide snapshot from the project api guide."""
+"""Check or synchronize the skill's api-guide snapshot."""
 
 from __future__ import annotations
 
 import argparse
 import filecmp
+import re
 import shutil
 from pathlib import Path
+
+
+MARKDOWN_LINK_RE = re.compile(r"\]\(\./([^)\s]+\.md)\)")
 
 
 def copy_tree(source: Path, target: Path) -> None:
@@ -43,9 +47,31 @@ def compare_tree(source: Path, target: Path) -> list[str]:
     return diffs
 
 
+def validate_snapshot(target: Path) -> list[str]:
+    problems: list[str] = []
+    if not target.is_dir():
+        return [f"Target directory not found: {target}"]
+    index_path = target / "llms.txt"
+    if not index_path.is_file():
+        return [f"Missing snapshot index: {index_path.name}"]
+
+    indexed_files = set(MARKDOWN_LINK_RE.findall(index_path.read_text(encoding="utf-8")))
+    actual_files = {path.name for path in target.glob("*.md")}
+
+    for filename in sorted(indexed_files - actual_files):
+        if not (target / filename).is_file():
+            problems.append(f"Missing snapshot file: {filename}")
+    for filename in sorted(actual_files - indexed_files):
+        problems.append(f"Unindexed snapshot file: {filename}")
+    return problems
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Sync or check skill api-guide snapshot.")
-    parser.add_argument("--source", default="api指引", help="Project source api guide directory.")
+    parser.add_argument(
+        "--source",
+        help="Optional external api-guide directory to compare or copy into the skill snapshot.",
+    )
     parser.add_argument(
         "--target",
         default="skills/ghostcut-api-guide/references/api-guide",
@@ -54,13 +80,25 @@ def main() -> None:
     parser.add_argument("--check", action="store_true", help="Only check whether source and target differ.")
     args = parser.parse_args()
 
-    source = Path(args.source).resolve()
     target = Path(args.target).resolve()
+    if args.source is None:
+        if args.check:
+            problems = validate_snapshot(target)
+            if problems:
+                print("\n".join(problems))
+                raise SystemExit(1)
+            print(f"api-guide snapshot is available: {target}")
+            return
+        parser.error("--source is required when syncing from an external api-guide directory")
+
+    source = Path(args.source).resolve()
     if not source.is_dir():
         raise SystemExit(f"Source directory not found: {source}")
     if args.check:
-        if not target.is_dir():
-            raise SystemExit(f"Target directory not found: {target}")
+        problems = validate_snapshot(target)
+        if problems:
+            print("\n".join(problems))
+            raise SystemExit(1)
         diffs = compare_tree(source, target)
         if diffs:
             print("\n".join(diffs))
