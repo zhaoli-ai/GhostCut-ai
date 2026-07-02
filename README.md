@@ -85,4 +85,5 @@ https://github.com/zhaoli-ai/GhostCut-ai/blob/main/skills.md
 
 ## 重要说明
 
-本仓库的使用边界和安装入口见 `skills.md`；实际 API 参数、素材要求和状态判断以 skill 内的参考文档为准。
+本仓库的使用边界和安装入口见 `skills.md`。
+本技能会代你调用 GhostCut API，产生的费用由你的账号承担。AI 生成的内容不保证完全准确，用于重要决策前请自行判断。请妥善保管 API Key。本项目仅供体验和参考，不提供任何可用性或稳定性保证。
