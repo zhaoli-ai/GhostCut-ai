@@ -1,6 +1,6 @@
 # 视频处理状态枚举
 
-> 本文档整理 GhostCut 视频处理结果 `processStatus` 的枚举值、公共错误码和排查建议。普通单视频任务的 `/v-w-c/gateway/ve/work/status` 查询方法见[视频任务状态查询](./11-work-status-query.md)。
+> 本文档整理 GhostCut 视频作品处理结果 `processStatus` 的枚举值、公共错误码和排查建议。普通单视频任务的 `/v-w-c/gateway/ve/work/status` 查询方法见[视频任务状态查询](./11-work-status-query.md)。普通视频上传和译制出海视频上传涉及的视频素材状态枚举见[文件上传](./10-file-upload.md)。
 
 ## 查询枚举接口
 

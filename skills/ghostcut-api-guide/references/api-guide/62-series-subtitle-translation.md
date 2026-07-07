@@ -247,7 +247,7 @@ POST https://api.zhaoli.com/v-w-c/gateway/ve/translate/subtitle/confirmTask
 }
 ```
 
-如果要把译后字幕用于配音或字幕压制，把查询到的字幕 `id` 作为 `workDto.idVeMaterialSrt`，或把字幕内容转换成 `workDto.extraOptions.customer_input.content[]`。两种输入方式必须二选一，不能同时传。
+如果要把译后字幕用于译制出海 AI 配音或字幕压制，把查询到的字幕 `id` 作为 `workDto.idVeMaterialSrt`，并从字幕素材的 `slInfo.sl[]` 或业务侧审核后的字幕结果组装 `workDto.extraOptions.customer_input.content[]`。这两个字段都要传，不要只传其中一个。
 
 ## 相关文档
 

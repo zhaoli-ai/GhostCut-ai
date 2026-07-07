@@ -22,7 +22,7 @@ gateway/ve/series/edit/task/subtitle/burn
 | 检查项 | 要求 |
 | --- | --- |
 | 项目和视频 | 已准备 `idSeries` 和 `items[].idMaterialVideo`，且视频素材已满足 `downloadStatus=1`、`processStatus=1`。 |
-| 字幕输入 | `workDto.idVeMaterialSrt` 与 `workDto.extraOptions.customer_input.content[]` 必须二选一；不能同时传。 |
+| 字幕输入 | 必须同时传 `workDto.idVeMaterialSrt` 和 `workDto.extraOptions.customer_input.content[]`；`idVeMaterialSrt` 用于引用字幕素材，`customer_input.content[]` 用于明确本次压制的字幕文本和时间轴。 |
 | 字幕压制参数 | 固定传 `wyTaskType=NO_TTS`、`wyNeedText=1`、`needWyEdit=0`。 |
 | 字幕样式 | 必须传 `videoEditParamsDto.wyVoiceParam.font_param`；不需要传 `character_voices[]`。 |
 | 基于擦除后视频 | 如果要基于字幕擦除后的作品压字幕，`workDto.materialWorkIds` 必须来自 `/work/status.body.content[].id`。 |
@@ -38,6 +38,7 @@ gateway/ve/series/edit/task/subtitle/burn
 | `wyTaskType` | `videoEditParamsDto` | `NO_TTS` |
 | `wyNeedText` | `videoEditParamsDto` | `1` |
 | `needWyEdit` | `videoEditParamsDto` | `0` |
+| `idVeMaterialSrt` | `workDto` | 字幕素材 ID |
 | `customer_input` | `workDto.extraOptions` | 字幕内容和时间轴 |
 | `wyVoiceParam.font_param` | `videoEditParamsDto` | 字幕样式 |
 
@@ -57,6 +58,7 @@ gateway/ve/series/edit/task/subtitle/burn
         "idSeries": 10001,
         "resolution": "1080p",
         "workName": "demo.mp4",
+        "idVeMaterialSrt": 90001,
         "extraOptions": {
           "customer_input": {
             "prefix": "demo-series",
@@ -147,6 +149,7 @@ payload = {
                 "idSeries": 10001,
                 "resolution": "1080p",
                 "workName": "demo.mp4",
+                "idVeMaterialSrt": 90001,
                 "extraOptions": {
                     "customer_input": {
                         "prefix": "demo-series",
@@ -208,9 +211,11 @@ print(json.dumps(result, ensure_ascii=False, indent=2))
 
 ## 字幕内容来源
 
-本接口示例使用 `workDto.extraOptions.customer_input.content[]` 直接传入字幕内容和时间轴。若业务使用已上传字幕素材，可改用 `workDto.idVeMaterialSrt`。
+本接口需要同时引用字幕素材并传入字幕内容：
 
-`workDto.idVeMaterialSrt` 和 `workDto.extraOptions.customer_input` 不接受同时传。组装字幕压制任务时必须二选一：要么引用字幕素材，要么直接传字幕内容和时间轴。
+- `workDto.idVeMaterialSrt` 必填，来自字幕上传、创建、复制、ASR/OCR 提取或字幕翻译后的字幕素材。
+- `workDto.extraOptions.customer_input.content[]` 必填，用于明确本次压制使用的字幕文本和时间轴。
+- 译制出海 AI 配音和字幕压制都采用这套“双字段”输入方式，不要只传其中一个。
 
 `idVeMaterialSrt` 应来自 [字幕素材管理](./61-series-subtitle-materials.md) 的字幕上传、创建、复制或查询结果。不要把字幕文件 URL、上传凭证中的临时 URL 或翻译任务 ID 填入该字段。
 
@@ -340,9 +345,8 @@ print(json.dumps(result, ensure_ascii=False, indent=2))
 - 用户只要把字幕压到画面上，不需要生成新配音时，用本接口。
 - 本功能为异步任务；生产接入推荐传入 `callback` 接收结果，轮询作为查询和补偿兜底。
 - 字幕压制固定使用 `wyTaskType=NO_TTS`，并设置 `wyNeedText=1`。
-- 字幕文本和时间轴可放在 `workDto.extraOptions.customer_input.content[]`。
-- 如果使用字幕素材，先查字幕列表确认 `idVeMaterialSrt`。
-- `idVeMaterialSrt` 和 `customer_input` 必须二选一，不能同时传。
+- 先查字幕列表确认 `idVeMaterialSrt`，再从字幕素材或业务侧编辑结果组装 `workDto.extraOptions.customer_input.content[]`。
+- 字幕压制必须同时传 `workDto.idVeMaterialSrt` 和 `workDto.extraOptions.customer_input.content[]`；不要省略其中一个。
 - 如果要基于去字后视频压制，必须传 `workDto.materialWorkIds`；取值来自 `/work/status` 的 `body.content[].id`。
 - `wyTaskType=NO_TTS` 的字幕压制永远不需要 `character_voices[]`；只传 `wyVoiceParam.font_param` 配置字幕样式。
 - `font_param.subtitleLang` 应与字幕语言一致。

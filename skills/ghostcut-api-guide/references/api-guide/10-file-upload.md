@@ -267,6 +267,40 @@ key = body.dir + filename
 
 后续 GhostCut API 需要素材 URL 时，传 `temporary_url`。
 
+## 视频素材状态枚举
+
+普通视频上传和译制出海视频上传都会经历视频素材下载、转码和预处理。相关接口或素材列表中出现的 `processStatus` 是“视频素材状态”，不等同于普通视频作品在 `/work/status` 中返回的任务处理状态。普通视频作品状态见[视频处理状态枚举](./14-video-process-status.md)。
+
+通用判断：
+
+| 判断 | 含义 | 下一步 |
+| --- | --- | --- |
+| `processStatus < 1` | 素材仍在下载、转码或等待预处理 | 继续等待或轮询。 |
+| `processStatus == 1` | 素材已可用 | 可继续提交后续处理任务。 |
+| `processStatus > 1` | 素材准备失败 | 按下方枚举排查；修复素材或资源问题后重新上传、导入或替换。 |
+
+视频素材 `processStatus` 常见枚举：
+
+| `processStatus` | 枚举名 | 中文说明 | 英文说明 | 建议处理 |
+| --- | --- | --- | --- | --- |
+| `-3` | `BaiduDownloadInit` | 百度云下载初始化中 | `Baidu cloud download initializing` | 中间状态，继续等待或轮询。 |
+| `-2` | `Transcoding` | 转码中 | `Transcoding` | 中间状态，继续等待或轮询。 |
+| `-1` | `Default` | 默认，需要进行处理 | `Default, waiting for processing` | 中间状态，继续等待或轮询。 |
+| `1` | `Success` | 成功 | `Success` | 素材准备完成，可用于后续处理任务。 |
+| `2` | `VideoUrlParseError` | URL 解析失败 | `Failed to parse supplied url` | 检查 URL 是否为公网可访问的视频直链，不能是登录页、网盘页或含中文字符的地址；修复后重新导入。 |
+| `3` | `DownloadFailure` | 下载失败 | `Failed to download material video` | 检查 URL 是否可访问、视频是否可播放、文件是否损坏；修复后重新导入或重新上传。 |
+| `4` | `TimeoutError` | 下载超时 | `Download timeout` | 可先重试；如多次失败，换用更稳定的素材 URL 或重新上传。 |
+| `5` | `FpsNotSupportedError` | 帧率过高不支持 | `Frame rate is too high` | 重新导出为常规帧率后再上传或导入。 |
+| `6` | `ValidationError` | 验证失败 | `Validation error` | 检查素材格式、大小、时长和元信息；必要时重新转码后再上传。 |
+| `7` | `TranscodeError` | 转码失败 | `Transcode error` | 素材转码失败；可先重新转码为常规 `mp4` 后再上传，仍失败时联系 GhostCut 并提供素材 ID。 |
+| `8` | `MaterialNotExistError` | 素材不存在 | `Material not exist` | 检查素材 ID 是否正确、素材是否已删除或是否属于当前项目。 |
+| `16` | `VideoCorruptedError` | 视频下载转码前后时长相差超过阈值，判定为下载的视频损坏 | `The material video may be currupted` | 检查视频是否完整可播放，建议重新导出或重新上传。 |
+| `17` | `ModerationSubmitError` | 审核任务提交失败 | `Failed to submit video audit task` | 可重试；多次失败时联系 GhostCut。 |
+| `73` | `PointExhaustedError` | 点数不足 | `Point exhausted` | 补充点数后重新处理。 |
+| `98` | `ResourceExhaustedError` | OSS 资源耗尽 | `Storage space is insufficient` | 清理存储空间或扩容后重试。 |
+| `99` | `ExeedDurationLimit` | 超出素材时长限制 | `Material video succeeds duration limit` | 拆分或裁剪视频后重新上传。 |
+| `100` | `ExeedSizeLimit` | 超出素材大小限制 | `Material video succeeds size limit` | 压缩视频或降低码率后重新上传。 |
+
 ## 删除上传后的文件
 
 ```http
@@ -522,6 +556,7 @@ print(deleted_count)
 - 如果用户提供的是本地路径，且目标 GhostCut 功能需要 URL，先走本文件上传流程。
 - 如果用户没有指定 `materialFileType`，根据扩展名推断：图片用 `image`，视频用 `video`，`.srt` 用 `srt`。
 - 如果用户明确说是“译制出海”“剧集素材”“项目字幕”，不要使用普通 `video` 或 `srt`，应使用 `video_series` 或 `srt_series`。
+- 用户问视频素材状态、上传状态、转码状态，或普通上传 / 译制出海上传后的 `processStatus` 时，使用本文“视频素材状态枚举”；不要套用 `/work/status` 的作品处理状态表。
 - 上传字幕到译制出海项目前，必须先有 `idMaterialVideo`。
 - OSS 上传接口不要加 `AppKey`、`AppSign`；只有 GhostCut 业务接口需要签名。
 - 对外返回给后续接口的是 `urlPrefix + filename`，删除接口使用的是 `dir + filename`。

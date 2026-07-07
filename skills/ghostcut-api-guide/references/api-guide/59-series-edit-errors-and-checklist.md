@@ -128,8 +128,9 @@
 - 情感克隆模式是否避免手动传 `wyVoiceParam.character_voices[]`。
 - 情感克隆模式是否仍然提供了字幕输入；`/series/edit/task/dubbing` 不允许完全不传字幕。
 - 是否没有把 `voice_type=CLONE` 误当成情感克隆模式；它只表示超真实音色。
-- 如果基于已有字幕配音，`workDto.idVeMaterialSrt` 是否来自同一项目下的字幕素材。
-- `workDto.idVeMaterialSrt` 和 `workDto.extraOptions.customer_input` 是否只传了一种；两者不能同时传。
+- `workDto.idVeMaterialSrt` 是否来自同一项目下的字幕素材。
+- 是否提供 `workDto.extraOptions.customer_input.content[]` 作为本次配音的字幕文本、时间轴和角色信息。
+- 是否同时传了 `workDto.idVeMaterialSrt` 和 `workDto.extraOptions.customer_input.content[]`；AI 配音不要只传其中一个。
 - `customer_input.content[]` 与 `wyVoiceParam.character_voices[]` 的角色是否匹配。
 - `wyNeedText=1` 时，`font_param.subtitleLang` 是否与目标语言一致。
 - `wyNeedText=0` 时，是否确认本任务只重新配音、不压制新字幕。
@@ -142,9 +143,9 @@
 
 - 是否传 `wyTaskType=NO_TTS`。
 - 是否传 `wyNeedText=1`。
-- 是否提供字幕文本和时间轴。
-- 如果使用字幕素材，是否已确认 `idVeMaterialSrt` 可用。
-- `workDto.idVeMaterialSrt` 和 `workDto.extraOptions.customer_input` 是否只传了一种；两者不能同时传。
+- 是否已确认 `idVeMaterialSrt` 可用，且字幕素材属于同一项目上下文。
+- 是否提供 `workDto.extraOptions.customer_input.content[]` 作为本次压制的字幕文本和时间轴。
+- 是否同时传了 `workDto.idVeMaterialSrt` 和 `workDto.extraOptions.customer_input.content[]`；字幕压制不要只传其中一个。
 - 基于去字后视频压制时，是否传 `workDto.materialWorkIds`，且取值是否来自 `/work/status` 的 `body.content[].id`。
 
 ### 音频分离检查

@@ -20,7 +20,7 @@
 
 - `api-guide/02-auth-and-sign.md`：API 凭证获取、签名规则和常见鉴权错误。
 - `api-guide/03-media-requirements.md`：素材 URL、视频格式、图片格式、本地上传和批量数量要求。
-- `api-guide/10-file-upload.md`：上传本地文件。
+- `api-guide/10-file-upload.md`：上传本地文件，查看视频素材状态枚举。
 - `api-guide/11-work-status-query.md`：查询 `/work/status`。
 - `api-guide/12-point-balance-query.md`：查询当前 `AppKey` 对应商户的有效点卡余额。
 - `api-guide/13-language-support.md`：语言支持。

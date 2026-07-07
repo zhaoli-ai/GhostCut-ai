@@ -4,7 +4,7 @@
 
 > 说明：配音任务统一使用 `id_ve_voice_character` 传音色。
 
-在组装本文结构前，必须先准备好项目和素材 ID：`idSeries` 来自项目创建或查询，`idMaterialVideo` 来自视频素材上传、导入或查询。如果任务选择引用字幕素材，再准备 `idVeMaterialSrt`，它来自字幕素材上传、创建或查询。
+在组装本文结构前，必须先准备好项目和素材 ID：`idSeries` 来自项目创建或查询，`idMaterialVideo` 来自视频素材上传、导入或查询。AI 配音和字幕压制还需要准备 `idVeMaterialSrt`，它来自字幕素材上传、创建、字幕提取、字幕翻译、复制或查询。
 
 ## 适用接口
 
@@ -94,7 +94,7 @@ def ghostcut_post(path: str, payload: dict) -> dict:
 | --- | --- | --- | --- |
 | `idSeries` | [项目与视频素材](./60-series-project-and-video-materials.md) 的项目创建或项目列表。 | 顶层 `idSeries`、`workDto.idSeries`。 | 剧集或项目 ID，是译制出海任务的主上下文。 |
 | `idMaterialVideo` | [项目与视频素材](./60-series-project-and-video-materials.md) 的视频上传、视频导入或视频列表。 | `items[].idMaterialVideo`。 | 视频素材 ID，必须与 `idSeries` 属于同一项目上下文。 |
-| `idVeMaterialSrt` | [字幕素材管理](./61-series-subtitle-materials.md) 的字幕上传、创建、复制或字幕列表。 | `workDto.idVeMaterialSrt`，或作为源字幕 ID 参与字幕翻译。 | 字幕素材 ID。AI 配音中与 `customer_input` 二选一，不要同时传。 |
+| `idVeMaterialSrt` | [字幕素材管理](./61-series-subtitle-materials.md) 的字幕上传、创建、复制或字幕列表；也可来自字幕提取或字幕翻译后的字幕列表结果。 | `workDto.idVeMaterialSrt`，或作为源字幕 ID 参与字幕翻译。 | 字幕素材 ID。AI 配音和字幕压制中都必须与 `customer_input.content[]` 同时传。 |
 | `task/list.body[].id` | [任务查询](./53-series-edit-task-list.md) 返回。 | 作为 `/v-w-c/gateway/ve/work/status` 的 project/task 查询 ID。 | 这是任务 ID，也可理解为 project id，不是作品 ID。 |
 | `/work/status.body.content[].id` | 使用 `task/list.body[].id` 调用 [视频任务状态查询](./11-work-status-query.md) 后返回。 | 后续任务的 `workDto.materialWorkIds`。 | 这是作品 ID；需要复用字幕擦除、音频分离等前一步处理结果时使用。 |
 | `id_ve_character` | 从字幕内容 `slInfo.sl[].id_ve_character` 提取；已接入角色列表时，也可从角色列表结果获取。 | `customer_input.content[].id_ve_character`、`character_voices[].id_ve_character`。 | 角色 ID，用于把字幕句子和经典模式音色配置关联起来。 |
@@ -176,7 +176,7 @@ def ghostcut_post(path: str, payload: dict) -> dict:
 
 ## `workDto.extraOptions.customer_input`
 
-配音和字幕压制任务可使用 `customer_input` 传入台词内容：
+配音和字幕压制任务可使用 `customer_input` 传入台词内容。译制出海 AI 配音和字幕压制中，`workDto.idVeMaterialSrt` 和 `workDto.extraOptions.customer_input.content[]` 都要传。
 
 ```json
 {
@@ -293,7 +293,7 @@ def ghostcut_post(path: str, payload: dict) -> dict:
 
 - [译制出海剪辑 API 总览](./51-series-overview.md)：查看模块流程和任务选择规则。
 - [项目与视频素材](./60-series-project-and-video-materials.md)：准备 `idSeries` 和 `idMaterialVideo`。
-- [字幕素材管理](./61-series-subtitle-materials.md)：在选择字幕素材输入方式时准备 `idVeMaterialSrt`，或查询字幕内容。
+- [字幕素材管理](./61-series-subtitle-materials.md)：准备 `idVeMaterialSrt`，并在需要时解析 `slInfo.sl[]` 组装 `customer_input.content[]`。
 - [任务查询](./53-series-edit-task-list.md)：提交任务后查询处理状态。
 - [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：查看 callback 回调格式、验签、重试、幂等和补偿轮询规则。
 - [错误与检查清单](./59-series-edit-errors-and-checklist.md)：提交前检查参数完整性。
@@ -304,7 +304,7 @@ def ghostcut_post(path: str, payload: dict) -> dict:
 - 本模块任务为异步处理；生产接入推荐传入顶层 `callback` 接收结果，轮询作为查询和补偿兜底。
 - 先拿真实 ID，再组装任务；不要用项目名、视频 URL 或字幕文件名代替 ID。
 - `idSeries` 和 `items[].idMaterialVideo` 必须属于同一个项目上下文；如果使用 `workDto.idVeMaterialSrt`，该字幕素材也必须属于同一项目上下文。
-- `workDto.idVeMaterialSrt` 和 `workDto.extraOptions.customer_input` 不接受同时传；字幕输入来源必须二选一。
+- AI 配音和字幕压制任务中，必须同时传 `workDto.idVeMaterialSrt` 和 `workDto.extraOptions.customer_input.content[]`；`idVeMaterialSrt` 绑定字幕素材上下文，`customer_input.content[]` 明确本次使用的逐句内容。
 - `videoEditParamsDto.type` 固定传 `WORK`。
 - 普通任务参数优先放到 `items[]` 元素内的 `workDto` 和 `videoEditParamsDto`，不要同时在顶层和 `items[]` 元素内重复放不一致的值。
 - `sourceLang`、`lang` 可以在顶层和 `videoEditParamsDto` 中同时出现，确保二者语义一致。

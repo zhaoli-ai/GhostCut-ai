@@ -18,7 +18,7 @@
 
 - [API 凭证与签名](./02-auth-and-sign.md)：说明 `AppKey`、`AppSecret` 获取方式、`AppSign` 签名规则和常见鉴权错误。
 - [素材 URL 与格式要求](./03-media-requirements.md)：说明本地文件上传、视频格式、图片格式、URL 字符和批量数量等通用约束。
-- [文件上传](./10-file-upload.md)：将本地 SRT、图片或视频上传到 GhostCut，并获取供后续 API 调用使用的临时 URL。
+- [文件上传](./10-file-upload.md)：将本地 SRT、图片或视频上传到 GhostCut，获取供后续 API 调用使用的临时 URL，并查看视频素材状态枚举。
 - [视频任务状态查询](./11-work-status-query.md)：使用 `/v-w-c/gateway/ve/work/status` 轮询普通单视频任务状态并读取结果 URL。
 - [点卡余额查询](./12-point-balance-query.md)：查询当前 `AppKey` 对应商户的有效点卡余额。
 - [不同功能支持的语言列表](./13-language-support.md)：按功能整理源语言、目标语言和完整语言代码表。

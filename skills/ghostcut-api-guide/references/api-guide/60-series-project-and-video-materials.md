@@ -208,6 +208,8 @@ POST https://api.zhaoli.com/v-w-c/gateway/ve/series/video/import
 | `processStatus=1` | 预处理完成，可用。 |
 | `processStatus>1` | 预处理失败。 |
 
+视频素材 `processStatus` 的完整枚举和排查建议见[文件上传](./10-file-upload.md)中的“视频素材状态枚举”。该枚举同样适用于普通视频上传、译制出海视频上传和视频素材替换。
+
 如果没有传 `callback`，应通过素材列表接口轮询。补偿轮询规则见[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。
 
 ### 查询项目内视频素材列表
@@ -251,7 +253,7 @@ POST https://api.zhaoli.com/v-w-c/gateway/ve/series/video/list
 | `id` | 视频素材 ID，即 `idMaterialVideo`。 |
 | `idSeries` | 所属项目 ID。 |
 | `downloadStatus` | 下载或云端准备状态。`1` 才可用。 |
-| `processStatus` | 预处理状态。`1` 才可用。 |
+| `processStatus` | 预处理状态。`1` 才可用；完整枚举见[文件上传](./10-file-upload.md)中的“视频素材状态枚举”。 |
 | `ossUrl` / `ossUrlTranscoding` | 素材可访问 URL。 |
 | `duration` | 视频时长，单位秒。 |
 | `fileSize` | 文件大小。 |
@@ -347,5 +349,5 @@ POST https://api.zhaoli.com/v-w-c/gateway/ve/series/video/replace
 - 创建项目、导入视频或提交处理任务时，生产接入推荐设置 `callback`；轮询用于素材状态查询和补偿兜底。
 - 用户给本地视频路径时，走 `video_series` 上传；用户给公网视频 URL 时，走 `series/video/import`。
 - 不要把普通上传返回的临时视频 URL 当成 `idMaterialVideo`；译制出海任务需要素材 ID。
-- 创建或替换视频素材后，不要立刻提交剪辑任务；先查询素材状态，等 `downloadStatus=1` 且 `processStatus=1`。
+- 创建或替换视频素材后，不要立刻提交剪辑任务；先查询素材状态，等 `downloadStatus=1` 且 `processStatus=1`。如果 `processStatus>1`，按[文件上传](./10-file-upload.md)中的视频素材状态枚举排查。
 - `items[].idMaterialVideo` 必须与顶层 `idSeries` 属于同一个项目。

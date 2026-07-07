@@ -127,7 +127,7 @@ AppSign = md5(body_md5hex + AppSecret).hexdigest()
 - 用户提到“译制出海”“剧集”“项目素材”“idSeries”“idMaterialVideo”时，优先使用本模块。
 - 没有 `idSeries` 时，先读 [项目与视频素材](./60-series-project-and-video-materials.md)，不要直接组装剪辑任务。
 - 没有 `idMaterialVideo` 时，先上传、导入或查询视频素材，并确认素材可用。
-- 选择字幕素材输入方式时，先读 [字幕素材管理](./61-series-subtitle-materials.md) 获取 `idVeMaterialSrt`，不要猜字幕 ID；选择 `customer_input` 时不要再传 `idVeMaterialSrt`。
+- 译制出海 AI 配音和字幕压制都需要字幕素材与逐句内容：先读 [字幕素材管理](./61-series-subtitle-materials.md) 获取 `idVeMaterialSrt`，再从 `slInfo.sl[]` 或业务编辑结果组装 `customer_input.content[]`，不要只传其中一个。
 - 本模块提交任务时使用 `items[]`、`workDto`、`videoEditParamsDto`，不要使用普通单视频接口的扁平请求体。
 - 提交任务的语言字段是 `sourceLang`、`lang`；查询任务的语言过滤字段是 `sourceLanguage`、`targetLanguage`。
 - 每个视频素材都要有一个 `items[]` 元素，不要把多个视频塞进同一个 `workDto`。
