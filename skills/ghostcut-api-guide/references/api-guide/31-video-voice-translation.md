@@ -82,7 +82,7 @@ wy_voice_param = {
 }
 
 extra_options = {
-    "subtitle_format": "srt",
+    "subtitle_format": ".srt",
     "extra_video_translate_config": {
         "video_speedup_on": True,
     },
@@ -146,7 +146,7 @@ video_inpaint_masks = [
 ]
 
 extra_options = {
-    "subtitle_format": "srt",
+    "subtitle_format": ".srt",
     "extra_video_translate_config": {
         "video_speedup_on": True,
     },
@@ -270,7 +270,7 @@ task_payload = {
 
 ```json
 {
-  "subtitle_format": "vtt",
+  "subtitle_format": ".vtt",
   "extra_video_translate_config": {
     "video_speedup_on": true
   },
@@ -304,7 +304,7 @@ task_payload = {
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
-| `subtitle_format` | `string` | 导出附加字幕文件格式，不传默认 `srt`，也可传 `vtt`。 |
+| `subtitle_format` | `string` | 导出附加字幕文件格式，取值需要带前导点；不传默认 `.srt`，也可传 `.vtt`。 |
 | `extra_video_translate_config.video_speedup_on` | `boolean` | 是否开启画面自动调速。默认 `true`，用于达到更好的视听同步效果；设为 `false` 时视频时长保持和原素材一致。 |
 | `extra_inpaint_config.subtitle_infer_on` | `boolean` | 字幕推断开关，适用于长时间停留在某区域的文字。 |
 | `extra_inpaint_config.auto_correct_on` | `boolean` | OCR 自动校准开关，默认关闭。 |
@@ -383,7 +383,7 @@ wy_voice_param = {
 }
 
 extra_options = {
-    "subtitle_format": "srt",
+    "subtitle_format": ".srt",
     "extra_video_translate_config": {
         "video_speedup_on": True,
     },
