@@ -2,7 +2,7 @@
 name: ghostcut-api-guide
 slug: ghostcut-ai-skill
 displayName: GhostCut鬼手剪辑-助力短剧ai剧视频出海
-version: 1.0.6
+version: 1.0.7
 summary: GhostCut API 指引 Skill 面向视频译制、内容出海和多媒体本地化场景，帮助 AI Agent 调用 GhostCut 完成字幕提取、字幕擦除、翻译配音、背景音乐处理、批量合成与字幕压制等流程。同时覆盖图片翻译、图片文字擦除等图像处理能力。Powered by GhostCut.
 license: MIT
 description: GhostCut API 指引 Skill 面向视频译制、内容出海和多媒体本地化场景，帮助 AI Agent 调用 GhostCut 完成字幕提取、字幕擦除、翻译配音、背景音乐处理、批量合成与字幕压制等流程。同时覆盖图片翻译、图片文字擦除等图像处理能力。Powered by GhostCut.
