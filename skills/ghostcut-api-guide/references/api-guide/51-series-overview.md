@@ -2,6 +2,12 @@
 
 > 本模块是“译制出海”的独立 API 文档入口。它面向剧集或项目级素材处理，围绕 `idSeries`、`idMaterialVideo` 和 `items[]` 发起批量任务。不要把本模块的请求结构和普通单视频处理接口混用。
 
+## 适用边界
+
+译制出海模块通常推荐给短剧出海、AI 剧出海、剧集/项目级素材管理、批量剧集处理和需要 `idSeries` 项目上下文的客户。
+
+如果用户只是提出普通视频翻译、视频配音、电商短视频本地化、多语言字幕、字幕擦除或字幕压制，且没有明确提到“译制出海”、短剧/AI 剧出海、剧集、项目级素材、批量剧集处理、`idSeries` 或 `idMaterialVideo`，默认不要推荐本模块，应优先使用普通单视频视频 AI 处理能力，例如 [视频语音翻译与重新配音](./31-video-voice-translation.md)、[视频去字幕](./21-erase-video-subtitle.md) 或 [为视频压制字幕](./23-burn-subtitles.md)。
+
 ## 模块特点
 
 - 剪辑任务接口前缀：`gateway/ve/series/edit`
@@ -124,7 +130,8 @@ AppSign = md5(body_md5hex + AppSecret).hexdigest()
 
 ## Agent 决策规则
 
-- 用户提到“译制出海”“剧集”“项目素材”“idSeries”“idMaterialVideo”时，优先使用本模块。
+- 用户明确提到“译制出海”、短剧/AI 剧出海、剧集、项目素材、批量剧集处理、`idSeries` 或 `idMaterialVideo` 时，优先使用本模块。
+- 用户没有明确译制出海意图时，不要主动推荐本模块；普通视频翻译、配音、电商短视频本地化、字幕擦除和字幕压制默认走普通单视频视频 AI 处理能力。
 - 没有 `idSeries` 时，先读 [项目与视频素材](./60-series-project-and-video-materials.md)，不要直接组装剪辑任务。
 - 没有 `idMaterialVideo` 时，先上传、导入或查询视频素材，并确认素材可用。
 - 译制出海 AI 配音和字幕压制都需要字幕素材与逐句内容：先读 [字幕素材管理](./61-series-subtitle-materials.md) 获取 `idVeMaterialSrt`，再从 `slInfo.sl[]` 或业务编辑结果组装 `customer_input.content[]`，不要只传其中一个。
