@@ -66,7 +66,7 @@
 5. 生产环境推荐创建任务时传入 `callback`；轮询作为主动查询和补偿兜底，规则见[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。
 6. 需要主动查询时，按[视频任务状态查询](./11-work-status-query.md)读取 `processStatus` 和结果 URL；失败排查见[视频处理状态枚举](./14-video-process-status.md)。
 
-图片处理使用 `/image/translate/query` 查询 `status` 和 `result`，不要套用普通视频的 `/work/status` 流程。译制出海模块使用 `idSeries`、`items[]` 和 `task/list`，入口见[译制出海剪辑 API 模块](./51-series-overview.md)。
+图片处理使用 `/image/translate/query` 查询 `status` 和 `result`，不要套用普通视频的 `/work/status` 流程。译制出海模块通常使用 `idSeries`、`items[]` 和 `task/list`；多作品合并使用独立的 `data.episodes[]` 结构，入口见[译制出海剪辑 API 模块](./51-series-overview.md)。
 
 ## 常见接口路径
 
@@ -87,6 +87,7 @@
 | `POST /v-w-c/gateway/ve/series/srt/list` | 查询译制出海字幕素材并获得 `idVeMaterialSrt` | [译制出海字幕素材管理](./61-series-subtitle-materials.md) |
 | `POST /v-w-c/gateway/ve/series/edit/task/...` | 创建译制出海剧集/项目级批量任务 | [译制出海剪辑 API 模块](./51-series-overview.md) |
 | `POST /v-w-c/gateway/ve/series/edit/task/list` | 查询译制出海任务列表和处理进度 | [译制出海任务查询](./53-series-edit-task-list.md) |
+| `POST /v-w-c/gateway/ve/series/edit/task/video/merge` | 将同一剧集下多个已有作品合并成长视频 | [译制出海多作品合并](./64-series-video-merge.md) |
 | `POST /v-w-c/gateway/ve/translate/subtitle` | 创建译制出海字幕翻译任务 | [译制出海字幕翻译任务](./62-series-subtitle-translation.md) |
 
 ## 重要参数关系
@@ -116,6 +117,7 @@
 | `idVeMaterialSrt` | 译制出海字幕素材 ID | [译制出海字幕素材管理](./61-series-subtitle-materials.md) |
 | `items[]` | 译制出海批量任务中每个视频的任务元素 | [译制出海通用任务结构](./52-series-edit-common-task-structure.md) |
 | `workDto` / `videoEditParamsDto` | 译制出海任务的作品参数和剪辑参数 | [译制出海通用任务结构](./52-series-edit-common-task-structure.md) |
+| `data.episodes[]` | 多作品合并任务中的作品列表；顶层 `data` 必须是 JSON 字符串 | [译制出海多作品合并](./64-series-video-merge.md) |
 
 ## Agent 决策规则
 

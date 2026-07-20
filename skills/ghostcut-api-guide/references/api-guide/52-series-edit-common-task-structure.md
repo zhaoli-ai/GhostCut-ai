@@ -2,6 +2,8 @@
 
 > 译制出海的字幕提取、字幕擦除、AI 配音、字幕压制和音频分离共用同一套任务请求结构。具体任务差异只体现在 `videoEditParamsDto`、`workDto.extraOptions` 和 `wyVoiceParam` 的取值。
 
+> [多作品合并](./64-series-video-merge.md)不适用本文结构。该接口使用 `clipParamMsRequest.idSeries` 和 JSON 字符串 `data.episodes[]`，不传 `items[]`、`workDto` 或 `videoEditParamsDto`。
+
 > 说明：配音任务统一使用 `id_ve_voice_character` 传音色。
 
 在组装本文结构前，必须先准备好项目和素材 ID：`idSeries` 来自项目创建或查询，`idMaterialVideo` 来自视频素材上传、导入或查询。AI 配音和字幕压制还需要准备 `idVeMaterialSrt`，它来自字幕素材上传、创建、字幕提取、字幕翻译、复制或查询。
@@ -300,7 +302,8 @@ def ghostcut_post(path: str, payload: dict) -> dict:
 
 ## Agent 决策规则
 
-- 本模块请求体以 `items[]` 为核心；每个视频一个 `items[]` 元素。
+- 本文覆盖的五类任务以 `items[]` 为核心；每个视频一个 `items[]` 元素。
+- 上述规则只适用于本文列出的五类任务；多作品合并必须使用其独立的 `data.episodes[]` 结构。
 - 本模块任务为异步处理；生产接入推荐传入顶层 `callback` 接收结果，轮询作为查询和补偿兜底。
 - 先拿真实 ID，再组装任务；不要用项目名、视频 URL 或字幕文件名代替 ID。
 - `idSeries` 和 `items[].idMaterialVideo` 必须属于同一个项目上下文；如果使用 `workDto.idVeMaterialSrt`，该字幕素材也必须属于同一项目上下文。

@@ -15,7 +15,7 @@
 | 背景音乐去除/分离 | [背景音乐去除/分离](./30-background-music-separation.md) | `videoUrl` |
 | 视频语音翻译与重新配音 | [视频语音翻译与重新配音](./31-video-voice-translation.md) | `videoUrl`，必要时再读取字幕 URL |
 
-本文的签名方式、请求体格式和响应读取逻辑，也可用于译制出海场景下继续查询作品详情；但译制出海不能直接从提交任务接口拿作品 ID，而应先通过 `task/list` 获取任务 ID，再按本文方式调用 `/work/status`，并以该接口实际返回的作品详情为准。相关流程见[译制出海任务查询](./53-series-edit-task-list.md)。
+本文的签名方式、请求体格式和响应读取逻辑，也可用于译制出海场景下继续查询作品详情。常规译制出海任务应先通过 `task/list` 获取任务 ID，再按本文方式调用 `/work/status`；[多作品合并](./64-series-video-merge.md)是例外，其创建响应 `body` 直接返回合并后作品 ID，可直接传入 `idWorks`。
 
 译制出海任务串联流程中，如果后续任务需要填写 `workDto.materialWorkIds`，应使用本接口响应里的作品 ID，精确路径是 `body.content[].id`；单视频结果通常读取 `body.content[0].id`。
 
@@ -40,7 +40,7 @@ AppSign: <generated_app_sign>
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
-| `idWorks` | `string[]` / `number[]` | 查询 ID 列表。普通单视频任务中通常传作品 ID；译制出海场景下通常先传 `task/list` 返回的任务 ID，再读取本接口返回的作品详情。 |
+| `idWorks` | `string[]` / `number[]` | 查询 ID 列表。普通单视频任务中通常传作品 ID；常规译制出海任务通常先传 `task/list` 返回的任务 ID；多作品合并直接传创建响应 `body` 中的作品 ID。 |
 
 签名规则和 `api_post` 封装方式见 [API 凭证与签名](./02-auth-and-sign.md)。
 
@@ -167,7 +167,7 @@ def query_work_status(work_id: str) -> dict:
 - 译制出海场景中，`/work/status` 返回的作品 ID 路径是 `body.content[].id`；单视频结果常读 `body.content[0].id`，这个值才可用于后续 `workDto.materialWorkIds`。
 - 视频去字幕、字幕压制、背景音乐分离、视频语音翻译成功后通常读取 `videoUrl`。
 - OCR/ASR 字幕提取成功后通常读取 `srcSrtUrl` / `tgtSrtUrl`，不要等待处理后视频。
-- 译制出海模块应先查[译制出海任务查询](./53-series-edit-task-list.md)拿到任务 ID；如果还需要作品详情、作品 ID 或播放地址，再按本文方式调用 `/work/status`，并以返回的作品详情为准。
+- 常规译制出海任务应先查[译制出海任务查询](./53-series-edit-task-list.md)拿到任务 ID；多作品合并直接使用创建响应 `body` 中的作品 ID。两种情况最终都按本文方式调用 `/work/status`。
 
 ## 相关文档
 

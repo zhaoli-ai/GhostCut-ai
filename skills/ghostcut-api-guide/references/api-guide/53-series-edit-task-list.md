@@ -168,6 +168,7 @@ gateway/ve/series/edit/task/list
 | 字幕翻译 | 通过 [字幕翻译任务](./62-series-subtitle-translation.md) 查询翻译任务，再通过字幕列表查询 `subtitleFrom=4` 的译后字幕。 |
 | 字幕擦除 | 需要后续复用或查看结果时，先通过 `task/list` 查询前序任务结果，找到对应的最新字幕擦除任务，拿到 `body[].id`。再按[视频任务状态查询](./11-work-status-query.md)调用 `/work/status` 查询该任务下的作品详情，从 `body.content[].id` 读取作品 ID。 |
 | AI 配音 / 字幕压制 / 音频分离 | 先用 `task/list` 判断完成，再从任务对象读取 `body[].id`；如果要查看作品 ID、播放地址或作品详情，再按[视频任务状态查询](./11-work-status-query.md)调用 `/work/status`，从 `body.content[].id` 读取作品 ID。 |
+| 多作品合并 | 可用 `taskType=SERIES_CLIP66` 查询任务；创建接口响应的 `body` 已直接返回合并后作品 ID，可直接调用 `/work/status` 读取 `videoUrl` 和合并字幕结果。 |
 
 如果响应中没有可用于后续查询的任务 ID，应保留任务 ID、`idSeries`、`trace` 和请求摘要，不要凭命名规则拼接 ID。
 
@@ -186,6 +187,7 @@ gateway/ve/series/edit/task/list
 - [异步任务、轮询和回调机制](./15-async-and-callbacks.md)：查看 callback 回调格式、验签、重试、幂等和补偿轮询规则。
 - [字幕素材管理](./61-series-subtitle-materials.md)：字幕提取和翻译完成后查询字幕素材。
 - [字幕翻译任务](./62-series-subtitle-translation.md)：查询、推进或重试字幕翻译任务。
+- [多作品合并](./64-series-video-merge.md)：查看 `SERIES_CLIP66` 的创建参数和结果读取方式。
 - [错误与检查清单](./59-series-edit-errors-and-checklist.md)：查看失败排查建议。
 
 ## Agent 决策规则

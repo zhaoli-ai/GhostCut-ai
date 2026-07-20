@@ -1,6 +1,6 @@
 # 译制出海剪辑 API 总览
 
-> 本模块是“译制出海”的独立 API 文档入口。它面向剧集或项目级素材处理，围绕 `idSeries`、`idMaterialVideo` 和 `items[]` 发起批量任务。不要把本模块的请求结构和普通单视频处理接口混用。
+> 本模块是“译制出海”的独立 API 文档入口。它面向剧集或项目级素材处理，通常围绕 `idSeries`、`idMaterialVideo` 和 `items[]` 发起批量任务。多作品合并使用独立的 `data.episodes[]` 结构。不要把本模块的请求结构和普通单视频处理接口混用。
 
 ## 适用边界
 
@@ -15,7 +15,7 @@
 - 字幕翻译和术语库接口前缀：`gateway/ve/translate`
 - 请求和返回均使用 JSON。
 - 请求需要 `AppKey` 和 `AppSign` 签名。
-- 一个任务请求可以同时提交多个视频，每个视频对应 `items[]` 中一个元素。
+- 常规剪辑任务可以同时提交多个视频，每个视频对应 `items[]` 中一个元素；多作品合并改用 `data.episodes[]`。
 - 顶层 `sourceLang`、`lang` 使用语种 code，例如 `zh`、`en`、`ja`、`ko`。
 - 无目标语种的任务，`lang` 可传空字符串。
 - 生产接入推荐在顶层传入 `callback` 接收处理结果通知，回调格式、验签、重试和幂等规则见[异步任务、轮询和回调机制](./15-async-and-callbacks.md)。
@@ -60,6 +60,7 @@ AppSign = md5(body_md5hex + AppSecret).hexdigest()
 | [字幕素材管理](./61-series-subtitle-materials.md) | 说明 SRT 上传、字幕内容创建、字幕列表查询、`slInfo` 解析、字幕更新、删除和复制。 |
 | [字幕翻译任务](./62-series-subtitle-translation.md) | 说明专家版 Agent 字幕翻译、翻译任务查询、人工审核推进和译后字幕获取。 |
 | [翻译术语库](./63-series-translation-glossary.md) | 说明角色名、称谓和专有名词术语的创建、查询、更新和删除。 |
+| [多作品合并](./64-series-video-merge.md) | 说明将同一剧集下多个已有作品按顺序合并成长视频，并可生成多语言合并字幕。 |
 
 ## 支持的任务
 
@@ -70,6 +71,7 @@ AppSign = md5(body_md5hex + AppSecret).hexdigest()
 | AI 配音 | `gateway/ve/series/edit/task/dubbing` |
 | 字幕压制 | `gateway/ve/series/edit/task/subtitle/burn` |
 | 音频分离 | `gateway/ve/series/edit/task/audio/separate` |
+| 多作品合并 | `gateway/ve/series/edit/task/video/merge` |
 | 查询任务 | `gateway/ve/series/edit/task/list` |
 
 ## 准备与辅助接口
@@ -97,22 +99,25 @@ AppSign = md5(body_md5hex + AppSecret).hexdigest()
    如果目标只是生成译后字幕，使用 [字幕翻译任务](./62-series-subtitle-translation.md)。如果要固定角色名、称谓或专有名词，先维护 [翻译术语库](./63-series-translation-glossary.md)。
 
 4. **选择剪辑任务类型**
-   根据用户目标选择字幕提取、字幕擦除、AI 配音、字幕压制或音频分离。
+   根据用户目标选择字幕提取、字幕擦除、AI 配音、字幕压制、音频分离或多作品合并。选择多作品合并时直接按第 10 步及其独立文档组装参数。
 
-5. **组装通用任务结构**
+5. **常规任务：组装通用任务结构**
    顶层传 `idSeries`、`projectName`、`sourceLang`、`lang`、`callback` 和 `items[]`。每个 `items[]` 元素对应一个视频。
 
-6. **填充每个视频的任务参数**
+6. **常规任务：填充每个视频的任务参数**
    每个 `items[]` 中至少包含 `idMaterialVideo`、`workDto` 和 `videoEditParamsDto`。具体字段按任务文档填写。
 
 7. **提交任务**
    调用对应的 `gateway/ve/series/edit/task/...` 接口。外层 `code=200` 表示请求被接受，不等于所有视频都处理完成。
 
 8. **接收回调或查询任务**
-   生产接入推荐通过 `callback` 接收结果；也可调用 [任务查询](./53-series-edit-task-list.md)，根据 `idSeries`、`ids`、语言、分页等条件查询任务列表，关注 `successWorkCount`、`errorWorkCount` 和 `processingWorkCount`，并从返回结构中读取处理结果。
+   生产接入推荐通过 `callback` 接收结果；常规任务也可调用 [任务查询](./53-series-edit-task-list.md)，根据 `idSeries`、`ids`、语言、分页等条件查询任务列表。多作品合并的创建响应 `body` 已是作品 ID，可直接调用 `/work/status`。
 
 9. **复用前置任务结果**
    如果后续任务要基于“去文字后视频”，先通过 `task/list` 查询前序任务，拿到对应任务的 `body[].id`。这个字段是任务 ID；再按 [视频任务状态查询](./11-work-status-query.md) 的方式调用 `/v-w-c/gateway/ve/work/status`，从返回的 `body.content[].id` 读取作品 ID，并填入后续任务的 `workDto.materialWorkIds`。
+
+10. **可选：合并已有作品**
+   需要把同一剧集下多个已有作品合成长视频时，使用[多作品合并](./64-series-video-merge.md)。该接口不使用通用 `items[]` 结构，创建响应 `body` 直接返回合并后作品 ID。
 
 ## 任务选择规则
 
@@ -127,6 +132,7 @@ AppSign = md5(body_md5hex + AppSecret).hexdigest()
 | 生成去 BGM 后的视频 | [音频分离](./58-series-audio-separate.md) | `removeBgAudio=2` |
 | 只翻译字幕并生成新字幕素材 | [字幕翻译任务](./62-series-subtitle-translation.md) | `taskSubType=agent`、`translateOptions` |
 | 固定人名、称谓或专有名词译法 | [翻译术语库](./63-series-translation-glossary.md) | `idSeries`、`idParent`、`lang` |
+| 将多个已有作品合成长视频 | [多作品合并](./64-series-video-merge.md) | `clipParamMsRequest.idSeries`、`data.episodes[]` |
 
 ## Agent 决策规则
 
@@ -135,7 +141,7 @@ AppSign = md5(body_md5hex + AppSecret).hexdigest()
 - 没有 `idSeries` 时，先读 [项目与视频素材](./60-series-project-and-video-materials.md)，不要直接组装剪辑任务。
 - 没有 `idMaterialVideo` 时，先上传、导入或查询视频素材，并确认素材可用。
 - 译制出海 AI 配音和字幕压制都需要字幕素材与逐句内容：先读 [字幕素材管理](./61-series-subtitle-materials.md) 获取 `idVeMaterialSrt`，再从 `slInfo.sl[]` 或业务编辑结果组装 `customer_input.content[]`，不要只传其中一个。
-- 本模块提交任务时使用 `items[]`、`workDto`、`videoEditParamsDto`，不要使用普通单视频接口的扁平请求体。
+- 字幕提取、字幕擦除、AI 配音、字幕压制和音频分离使用 `items[]`、`workDto`、`videoEditParamsDto`；多作品合并使用 `data.episodes[]`，不要混用两套结构。
 - 提交任务的语言字段是 `sourceLang`、`lang`；查询任务的语言过滤字段是 `sourceLanguage`、`targetLanguage`。
 - 每个视频素材都要有一个 `items[]` 元素，不要把多个视频塞进同一个 `workDto`。
 - 需要基于前序处理结果继续处理时，先通过 `task/list` 取得前序任务 ID，再通过 `/work/status` 查询该任务下的作品详情，把 `body.content[].id` 作为后续 `workDto.materialWorkIds`。
