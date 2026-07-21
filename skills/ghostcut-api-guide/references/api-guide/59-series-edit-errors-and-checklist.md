@@ -6,7 +6,7 @@
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
-| `code` | `Integer` | 剪辑任务接口通常 `200` 表示请求成功；项目、素材、字幕和翻译管理接口通常 `1000` 表示成功。 |
+| `code` | `Integer` | 响应体业务码；GhostCut 网关接口统一以 `1000` 表示接口调用成功。不要与 HTTP 状态码混淆。 |
 | `msg` | `String` | 响应信息。 |
 | `body` | `Object` | 业务返回内容。 |
 | `count` | `Long` | 列表总数，列表接口返回。 |
@@ -16,7 +16,7 @@
 
 ```json
 {
-  "code": 200,
+  "code": 1000,
   "msg": "success",
   "body": {},
   "count": 0,
@@ -73,6 +73,7 @@
 - 检查 `lang` 是否为目标语种。
 - 检查 `wyVoiceParam.character_voices[]` 中的音色是否支持该目标语种。
 - 检查 `character` 和 `id_ve_character` 是否与 `customer_input.content[]` 对应。
+- 检查 `id_ve_character` 是否来自当前剧集角色，`id_ve_voice_character` 是否来自公共音色；不要交换两个 ID。
 
 ### 复用作品结果不合法
 
@@ -132,6 +133,7 @@
 - 是否提供 `workDto.extraOptions.customer_input.content[]` 作为本次配音的字幕文本、时间轴和角色信息。
 - 是否同时传了 `workDto.idVeMaterialSrt` 和 `workDto.extraOptions.customer_input.content[]`；AI 配音不要只传其中一个。
 - `customer_input.content[]` 与 `wyVoiceParam.character_voices[]` 的角色是否匹配。
+- `id_ve_character` 是否来自当前剧集的角色列表或字幕角色信息，`id_ve_voice_character` 是否来自公共音色列表。
 - `wyNeedText=1` 时，`font_param.subtitleLang` 是否与目标语言一致。
 - `wyNeedText=0` 时，是否确认本任务只重新配音、不压制新字幕。
 - 是否传了 `removeBgAudio` 作为原音处理参数。
@@ -172,13 +174,15 @@
 - [项目与视频素材](./60-series-project-and-video-materials.md)：检查 `idSeries`、`idMaterialVideo` 和素材准备状态。
 - [字幕素材管理](./61-series-subtitle-materials.md)：检查 `idVeMaterialSrt` 和字幕内容。
 - [字幕翻译任务](./62-series-subtitle-translation.md)：检查翻译任务和人工审核流程。
+- [剧集角色管理](./65-series-character-management.md)：检查剧集角色、角色分页、复制规则和角色 ID 来源。
 
 ## Agent 决策规则
 
-- 外层 `code=200` 表示请求成功，不表示任务内所有视频都已处理成功。
+- 外层业务 `code=1000` 表示接口调用成功，不表示任务内所有视频都已处理成功。
 - 译制出海剪辑任务为异步处理；生产接入推荐通过 `callback` 接收结果，任务查询作为主动查询、补偿兜底和排查入口。
-- 项目、素材、字幕和翻译管理接口通常以 `code=1000` 表示成功；剪辑任务接口通常以 `code=200` 表示请求成功。
+- GhostCut 网关接口的响应体业务成功码统一为 `code=1000`；示例代码必须严格按该值判断。
 - 外层 `code=500` 时，优先读取 `msg` 和 `trace`。
 - 任何失败排查都应保留 `trace`，并同时记录 `idSeries`、任务接口、请求体摘要。
 - 素材未准备完成、缺少 `items`、字幕 ID 不属于当前项目、音色语种不匹配、`materialWorkIds` 不可用是本模块最常见的失败原因。
+- 涉及角色时，额外检查剧集角色 ID 与公共音色 ID 是否被混用；角色管理规则见[译制出海剧集角色管理](./65-series-character-management.md)。
 - 如果用户要串联任务，先通过 `task/list` 确认前序任务已成功，再拿到对应任务的 `body[].id`，并继续调用 `/work/status` 查询该任务下的作品详情；填入 `materialWorkIds` 的作品 ID 来自 `/work/status` 的 `body.content[].id`。

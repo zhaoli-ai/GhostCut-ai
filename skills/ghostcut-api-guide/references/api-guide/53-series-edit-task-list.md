@@ -81,7 +81,7 @@ gateway/ve/series/edit/task/list
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
-| `code` | `Integer` | 响应码，`200` 表示请求成功。 |
+| `code` | `Integer` | 响应体业务码，`1000` 表示接口调用成功。 |
 | `msg` | `String` | 响应信息。 |
 | `body` | `Array` | 任务列表；每个元素是一个任务对象。 |
 | `count` | `Long` | 列表总数。 |
@@ -193,7 +193,7 @@ gateway/ve/series/edit/task/list
 ## Agent 决策规则
 
 - 提交译制出海任务后，生产接入优先通过 `callback` 接收结果；本接口用于主动查询、补偿兜底和问题排查。如果还需要作品详情、作品 ID 或播放地址，再继续调用 `/work/status`。
-- 外层 `code=200` 只是查询请求成功，还要继续看任务里的 `successWorkCount`、`errorWorkCount`、`processingWorkCount`。
+- 外层业务 `code=1000` 只是查询接口调用成功，还要继续看任务里的 `successWorkCount`、`errorWorkCount`、`processingWorkCount`。
 - 如果用户问“任务是否完成”，优先按任务计数字段判断。
 - 如果用户问“字幕结果在哪里”，优先查字幕素材列表；如果用户问“视频结果在哪里”，先读取 `task/list` 返回的 `body[].id`，再按[视频任务状态查询](./11-work-status-query.md)查询作品详情。
 - `task/list` 的 `body[].id` 是任务 ID，不是作品 ID；作品 ID 或播放地址需要通过 `/work/status` 继续查询。

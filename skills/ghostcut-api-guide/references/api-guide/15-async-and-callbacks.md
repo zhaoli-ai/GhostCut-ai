@@ -24,7 +24,7 @@
 | `task/list.body[].id` | 译制出海任务 ID，也可理解为 project/task ID。 | 译制出海先用它查询任务或继续调用 `/work/status`。不要直接当作后续 `materialWorkIds`。 |
 | `/work/status.body.content[].id` | `/work/status` 返回的作品 ID。 | 译制出海后续任务需要复用前序作品时，填入 `workDto.materialWorkIds`。 |
 
-外层接口返回 `code=1000` 或 `code=200` 只表示请求被接受或查询接口调用成功。任务最终是否成功，必须继续检查任务状态字段。
+外层接口返回业务 `code=1000` 只表示请求被接受或查询接口调用成功。任务最终是否成功，必须继续检查任务状态字段。
 
 ## 状态判断
 
@@ -223,7 +223,7 @@ def ghostcut_callback():
 ## Agent 决策规则
 
 - 用户提到异步任务、轮询、`callback`、回调验签、`Callback-Sign`、重试或幂等时，先读本文。
-- 创建任务接口返回成功后，不要把外层 `code=1000` 或 `code=200` 当作最终处理成功。
+- 创建任务接口返回业务 `code=1000` 后，不要把它当作最终处理成功。
 - 普通视频任务查询结果优先用 [视频任务状态查询](./11-work-status-query.md)，并按 [视频处理状态枚举](./14-video-process-status.md) 判断 `processStatus`。
 - 图片任务查询结果按 [AI 图片处理](./81-image-processing.md) 读取 `status` 和 `result`。
 - 译制出海任务先查 [译制出海任务查询](./53-series-edit-task-list.md)，需要作品详情时再查 `/work/status`。

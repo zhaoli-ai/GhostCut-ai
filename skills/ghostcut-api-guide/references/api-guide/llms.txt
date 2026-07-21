@@ -62,6 +62,7 @@
 - [译制出海字幕翻译任务](./62-series-subtitle-translation.md)：字幕翻译任务、查询和结果获取。
 - [译制出海翻译术语库](./63-series-translation-glossary.md)：术语插入、查询、更新、删除和字幕翻译关联。
 - [译制出海多作品合并](./64-series-video-merge.md)：将同一剧集下多个已有作品按顺序合并成长视频，并可合并多语言外挂字幕。
+- [译制出海剧集角色管理](./65-series-character-management.md)：创建、查询、更新、批量更新和复制剧集角色，并区分剧集角色 ID 与公共音色 ID。
 
 ## 参考附录
 

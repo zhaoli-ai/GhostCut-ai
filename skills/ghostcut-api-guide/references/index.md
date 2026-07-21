@@ -60,6 +60,7 @@
 - `api-guide/62-series-subtitle-translation.md`：译制出海字幕翻译任务。
 - `api-guide/63-series-translation-glossary.md`：译制出海翻译术语库。
 - `api-guide/64-series-video-merge.md`：译制出海多作品合并和多语言外挂字幕合并。
+- `api-guide/65-series-character-management.md`：译制出海剧集角色创建、查询、更新、批量更新和跨剧集复制。
 
 ## 参考附录
 

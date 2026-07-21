@@ -43,7 +43,7 @@ AppSign: generated_app_sign
 | --- | --- | --- |
 | `body` | `object` / `array` | 业务返回内容。可能是音色列表，也可能是按语言分组后的列表。 |
 | `count` | `number` | 返回条数。不分组时为音色数量，按语言分组时为语言分组数量。 |
-| `code` | `number` | 返回码。成功值按实际接口返回判断；调用示例兼容 `1000` 和 `200`。 |
+| `code` | `number` | 响应体业务码，`1000` 表示接口调用成功。 |
 | `msg` | `string` | 返回消息。 |
 | `trace` | `string` | 链路追踪 ID。 |
 
@@ -179,7 +179,7 @@ def ghostcut_post(path: str, payload: dict) -> dict:
     )
     response.raise_for_status()
     data = response.json()
-    if data.get("code") not in (1000, 200):
+    if data.get("code") != 1000:
         raise RuntimeError(f"GhostCut API failed: {data}")
     return data
 

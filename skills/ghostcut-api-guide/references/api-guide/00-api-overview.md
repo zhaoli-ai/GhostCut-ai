@@ -39,6 +39,7 @@
 | 擦除图片文字、翻译图片并回填到图中、调整图片翻译结果 | [AI 图片处理](./81-image-processing.md) | [文件上传](./10-file-upload.md)、[语言列表](./13-language-support.md) |
 | 处理译制出海剧集、项目素材或批量视频任务 | [译制出海剪辑 API 模块](./51-series-overview.md) | [译制出海项目与视频素材](./60-series-project-and-video-materials.md)、[译制出海字幕素材管理](./61-series-subtitle-materials.md)、[译制出海通用任务结构](./52-series-edit-common-task-structure.md) |
 | 翻译译制出海字幕、维护术语库或审核翻译 | [译制出海字幕翻译任务](./62-series-subtitle-translation.md) | [译制出海翻译术语库](./63-series-translation-glossary.md)、[译制出海字幕素材管理](./61-series-subtitle-materials.md) |
+| 创建、查询、更新、删除或复制译制出海剧集角色 | [译制出海剧集角色管理](./65-series-character-management.md) | [译制出海 AI 配音](./56-series-dubbing.md)、[公共音色查询接口](./32-public-voice-characters.md) |
 | 查询不同功能支持哪些语种 | [不同功能支持的语言列表](./13-language-support.md) | 需要语种参数的具体功能文档 |
 | 判断 `processStatus` 状态值、失败原因是什么 | [视频处理状态枚举](./14-video-process-status.md) | [视频任务状态查询](./11-work-status-query.md) |
 | 维护本文档项目的写作规则和 Cursor 配置 | [Cursor 配置](./99-cursor.md) | [完整文档索引](./llms.txt) |
@@ -89,6 +90,7 @@
 | `POST /v-w-c/gateway/ve/series/edit/task/list` | 查询译制出海任务列表和处理进度 | [译制出海任务查询](./53-series-edit-task-list.md) |
 | `POST /v-w-c/gateway/ve/series/edit/task/video/merge` | 将同一剧集下多个已有作品合并成长视频 | [译制出海多作品合并](./64-series-video-merge.md) |
 | `POST /v-w-c/gateway/ve/translate/subtitle` | 创建译制出海字幕翻译任务 | [译制出海字幕翻译任务](./62-series-subtitle-translation.md) |
+| `POST /v-w-c/gateway/ve/series_character/...` | 创建、查询、更新、批量更新或复制剧集角色 | [译制出海剧集角色管理](./65-series-character-management.md) |
 
 ## 重要参数关系
 
@@ -112,6 +114,7 @@
 | `wyVoiceParam` | 字幕压制、配音、字幕样式等复杂配置 | [视频语音翻译与重新配音](./31-video-voice-translation.md)、[字幕样式和字体配置补充](./26-subtitle-style-and-fonts.md) |
 | `font_param` | 新字幕的字体、描边、阴影和背景样式 | [字幕样式和字体配置补充](./26-subtitle-style-and-fonts.md) |
 | `id_ve_voice_character` | 经典模式下的配音音色角色 ID。`voice_type=TTS` 和 `voice_type=CLONE` 均使用该字段。 | [公共音色查询接口](./32-public-voice-characters.md) |
+| `id_ve_character` | 译制出海当前剧集中的业务角色 ID；与公共音色 ID 是不同实体。 | [译制出海剧集角色管理](./65-series-character-management.md) |
 | `idSeries` | 译制出海剧集 ID | [译制出海项目与视频素材](./60-series-project-and-video-materials.md) |
 | `idMaterialVideo` | 译制出海素材视频 ID | [译制出海项目与视频素材](./60-series-project-and-video-materials.md) |
 | `idVeMaterialSrt` | 译制出海字幕素材 ID | [译制出海字幕素材管理](./61-series-subtitle-materials.md) |
@@ -137,5 +140,6 @@
 - 涉及视频语音翻译、重新配音或译制，且原视频画面已有硬字幕时，读[视频语音翻译与重新配音](./31-video-voice-translation.md)中的组合场景；语音翻译和字幕擦除通常在同一次 `/work/free` 请求中组合参数，不要默认拆成两次处理。
 - 涉及图片文字擦除、图片翻译、Image Redo 或图片翻译精修时，先查[AI 图片处理](./81-image-processing.md)。
 - 涉及译制出海、短剧/AI 剧出海、剧集、项目素材、批量剧集任务、`idSeries` 或 `idMaterialVideo` 时，先查[译制出海剪辑 API 模块](./51-series-overview.md)。
+- 涉及剧集角色创建、维护、复制或 `id_ve_character` 时，先查[译制出海剧集角色管理](./65-series-character-management.md)。需要给角色选择音色时，再查[公共音色查询接口](./32-public-voice-characters.md)。
 - 用户未明确提到译制出海或剧集/项目级处理时，不主动推荐译制出海模块；普通视频翻译、配音、电商短视频本地化、字幕擦除和字幕压制默认走视频 AI 处理能力。
 - 本文只做路由和公共规则说明；具体请求体字段和完整代码示例以功能文档为准。

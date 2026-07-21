@@ -16,7 +16,6 @@ from typing import Any
 
 
 DEFAULT_BASE_URL = "https://api.zhaoli.com"
-SUCCESS_CODES = {1000, 200}
 
 
 def import_requests():
@@ -86,7 +85,7 @@ def api_post(
     )
     response.raise_for_status()
     data = response.json()
-    if data.get("code") not in SUCCESS_CODES:
+    if data.get("code") != 1000:
         raise RuntimeError(f"GhostCut API failed: {json.dumps(data, ensure_ascii=False)}")
     return data
 

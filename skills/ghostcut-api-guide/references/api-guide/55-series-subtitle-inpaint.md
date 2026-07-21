@@ -141,7 +141,7 @@ def api_post(path: str, payload: dict) -> dict:
     )
     response.raise_for_status()
     data = response.json()
-    if data.get("code") not in (1000, 200):
+    if data.get("code") != 1000:
         raise RuntimeError(f"GhostCut API failed: {data}")
     return data
 

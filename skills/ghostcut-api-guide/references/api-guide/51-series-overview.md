@@ -6,13 +6,25 @@
 
 译制出海模块通常推荐给短剧出海、AI 剧出海、剧集/项目级素材管理、批量剧集处理和需要 `idSeries` 项目上下文的客户。
 
+使用译制出海项目级能力要求账号会员等级达到 VIP3 或以上。这组能力不是单个原子视频接口的替代品；调用方应根据自动化程度选择下面的接入模式。
+
 如果用户只是提出普通视频翻译、视频配音、电商短视频本地化、多语言字幕、字幕擦除或字幕压制，且没有明确提到“译制出海”、短剧/AI 剧出海、剧集、项目级素材、批量剧集处理、`idSeries` 或 `idMaterialVideo`，默认不要推荐本模块，应优先使用普通单视频视频 AI 处理能力，例如 [视频语音翻译与重新配音](./31-video-voice-translation.md)、[视频去字幕](./21-erase-video-subtitle.md) 或 [为视频压制字幕](./23-burn-subtitles.md)。
+
+## 接入模式
+
+| 模式 | 适用场景 | 处理方式 | 关键限制 |
+| --- | --- | --- | --- |
+| API 上传下载 + Web 编辑 | API 批量准备素材，在 Web 中人工校对和编辑 | API 创建剧集、上传素材、准备字幕和翻译；人工在 Web 中完成字幕校对、角色调整、音色选择、配音和其他复杂编辑 | 自动化程度较低；用户在 Web 直接下载作品不会触发 `callback` |
+| 全流程 API 自动化 | 批量处理、系统集成和自动获取结果 | API 完成剧集、素材、字幕、翻译、角色、配音及后处理，并通过回调或查询取得结果 | 调用方需要维护 ID 映射、参数组装、异步状态和异常处理 |
+
+Web 编辑模式可通过 `https://cn.jollytoday.com/series/detail/?id={idSeries}` 打开对应剧集。`{idSeries}` 必须替换为 API 创建或查询得到的剧集 ID。需要自动接收结果时，不要依赖 Web 下载，应使用 API 查询或任务 `callback`。
 
 ## 模块特点
 
 - 剪辑任务接口前缀：`gateway/ve/series/edit`
 - 项目、素材和字幕准备接口前缀：`gateway/ve/series`
 - 字幕翻译和术语库接口前缀：`gateway/ve/translate`
+- 剧集角色管理接口前缀：`gateway/ve/series_character`
 - 请求和返回均使用 JSON。
 - 请求需要 `AppKey` 和 `AppSign` 签名。
 - 常规剪辑任务可以同时提交多个视频，每个视频对应 `items[]` 中一个元素；多作品合并改用 `data.episodes[]`。
@@ -61,6 +73,7 @@ AppSign = md5(body_md5hex + AppSecret).hexdigest()
 | [字幕翻译任务](./62-series-subtitle-translation.md) | 说明专家版 Agent 字幕翻译、翻译任务查询、人工审核推进和译后字幕获取。 |
 | [翻译术语库](./63-series-translation-glossary.md) | 说明角色名、称谓和专有名词术语的创建、查询、更新和删除。 |
 | [多作品合并](./64-series-video-merge.md) | 说明将同一剧集下多个已有作品按顺序合并成长视频，并可生成多语言合并字幕。 |
+| [剧集角色管理](./65-series-character-management.md) | 说明角色创建、查询、更新、批量删除状态、跨剧集复制，以及角色 ID 与音色 ID 的映射。 |
 
 ## 支持的任务
 
@@ -86,6 +99,7 @@ AppSign = md5(body_md5hex + AppSecret).hexdigest()
 | 查询字幕素材 | `gateway/ve/series/srt/list` | 获得 `idVeMaterialSrt`，读取 `slInfo`。 |
 | 字幕翻译 | `gateway/ve/translate/subtitle` | 翻译源字幕并生成新字幕素材。 |
 | 术语库 | `gateway/ve/translate/*TranslateGlossary2` | 维护项目级翻译术语。 |
+| 剧集角色 | `gateway/ve/series_character/*Character` | 维护剧集角色，并为经典配音提供 `id_ve_character`。 |
 
 ## 使用流程
 
@@ -98,6 +112,8 @@ AppSign = md5(body_md5hex + AppSecret).hexdigest()
 3. **可选：翻译字幕和术语库**
    如果目标只是生成译后字幕，使用 [字幕翻译任务](./62-series-subtitle-translation.md)。如果要固定角色名、称谓或专有名词，先维护 [翻译术语库](./63-series-translation-glossary.md)。
 
+   经典 AI 配音需要稳定的剧集角色映射时，使用 [剧集角色管理](./65-series-character-management.md) 查询或维护角色。角色对象的 `id` 对应 `id_ve_character`，不要与公共音色的 `id_ve_voice_character` 混用。
+
 4. **选择剪辑任务类型**
    根据用户目标选择字幕提取、字幕擦除、AI 配音、字幕压制、音频分离或多作品合并。选择多作品合并时直接按第 10 步及其独立文档组装参数。
 
@@ -108,7 +124,7 @@ AppSign = md5(body_md5hex + AppSecret).hexdigest()
    每个 `items[]` 中至少包含 `idMaterialVideo`、`workDto` 和 `videoEditParamsDto`。具体字段按任务文档填写。
 
 7. **提交任务**
-   调用对应的 `gateway/ve/series/edit/task/...` 接口。外层 `code=200` 表示请求被接受，不等于所有视频都处理完成。
+   调用对应的 `gateway/ve/series/edit/task/...` 接口。外层业务 `code=1000` 表示请求被接受，不等于所有视频都处理完成。
 
 8. **接收回调或查询任务**
    生产接入推荐通过 `callback` 接收结果；常规任务也可调用 [任务查询](./53-series-edit-task-list.md)，根据 `idSeries`、`ids`、语言、分页等条件查询任务列表。多作品合并的创建响应 `body` 已是作品 ID，可直接调用 `/work/status`。
@@ -133,6 +149,7 @@ AppSign = md5(body_md5hex + AppSecret).hexdigest()
 | 只翻译字幕并生成新字幕素材 | [字幕翻译任务](./62-series-subtitle-translation.md) | `taskSubType=agent`、`translateOptions` |
 | 固定人名、称谓或专有名词译法 | [翻译术语库](./63-series-translation-glossary.md) | `idSeries`、`idParent`、`lang` |
 | 将多个已有作品合成长视频 | [多作品合并](./64-series-video-merge.md) | `clipParamMsRequest.idSeries`、`data.episodes[]` |
+| 创建、维护或复制剧集角色 | [剧集角色管理](./65-series-character-management.md) | `VeCharacterDto`、`idSeries`、角色 `id` |
 
 ## Agent 决策规则
 
@@ -147,4 +164,5 @@ AppSign = md5(body_md5hex + AppSecret).hexdigest()
 - 需要基于前序处理结果继续处理时，先通过 `task/list` 取得前序任务 ID，再通过 `/work/status` 查询该任务下的作品详情，把 `body.content[].id` 作为后续 `workDto.materialWorkIds`。
 - 配音模式不要和音色类型混用：`voice_type=CLONE` 表示超真实音色，仍属于经典模式；情感克隆模式通过 `wyTaskType=VOICE_CLONE_PRO` 区分。
 - 译制出海 `/series/edit/task/dubbing` 的经典模式和情感克隆模式都必须提供字幕输入；不要把普通单视频配音的默认 ASR 规则套用到本模块。
-- 外层 `code=200` 只表示接口请求成功；生产接入推荐通过 `callback` 接收最终结果，任务是否完成也可通过 [任务查询](./53-series-edit-task-list.md) 判断。
+- `id_ve_character` 是当前剧集中的角色 ID；`id_ve_voice_character` 是公共配音音色 ID。经典配音通常同时需要二者，不能互换。
+- 外层业务 `code=1000` 只表示接口请求成功；生产接入推荐通过 `callback` 接收最终结果，任务是否完成也可通过 [任务查询](./53-series-edit-task-list.md) 判断。

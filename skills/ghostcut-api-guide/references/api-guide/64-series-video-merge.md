@@ -97,7 +97,7 @@ gateway/ve/series/edit/task/video/merge
 
 ```json
 {
-  "code": 200,
+  "code": 1000,
   "msg": "success",
   "body": 50000001,
   "count": 0,
@@ -152,7 +152,7 @@ def ghostcut_post(path: str, payload: dict) -> dict:
     )
     response.raise_for_status()
     data = response.json()
-    if data.get("code") not in (1000, 200):
+    if data.get("code") != 1000:
         raise RuntimeError(json.dumps(data, ensure_ascii=False, indent=2))
     return data
 
